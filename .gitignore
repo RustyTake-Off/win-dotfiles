@@ -1,0 +1,9 @@
+# Ignore everything 
+/*
+
+# Except
+!.config/
+!docs/
+!.gitignore
+!LICENSE
+!README.md
