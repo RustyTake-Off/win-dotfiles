@@ -24,11 +24,15 @@ oh-my-posh init pwsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/
 
 # Aliases
 Set-Alias -Name 'g' -Value 'git'
+Set-Alias -Name 'wig' -Value 'winget'
 
 # Functions
 function hm { Set-Location $env:USERPROFILE }
 function hpr { Set-Location "$env:USERPROFILE/pr" }
 function hwk { Set-Location "$env:USERPROFILE/wk" }
+function desk { Set-Location "$env:USERPROFILE/Desktop" }
+function doc { Set-Location "$env:USERPROFILE/Documents" }
+function dl { Set-Location "$env:USERPROFILE/Downloads" }
 function cd. { Set-Location .. }
 function cd.. { Set-Location ..\.. }
 function cd... { Set-Location ..\..\.. }
