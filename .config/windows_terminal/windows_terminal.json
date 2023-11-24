@@ -55,7 +55,7 @@
         },
         "list": [
             {
-                "backgroundImage": "%USERPROFILE%\\media\\images\\ps5.1-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\images\\ps5.1-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -65,7 +65,7 @@
                 "name": "Windows PowerShell"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\media\\images\\msdos-120x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\images\\msdos-120x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -75,7 +75,7 @@
                 "name": "Command Prompt"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\media\\images\\ps7-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\images\\ps7-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -86,7 +86,7 @@
                 "source": "Windows.Terminal.PowershellCore"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\media\\images\\azure-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\images\\azure-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -97,7 +97,7 @@
                 "source": "Windows.Terminal.Azure"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\media\\images\\git-bash-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\images\\git-bash-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -108,7 +108,7 @@
                 "source": "Git"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\media\\images\\ubuntu-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\images\\ubuntu-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -119,7 +119,7 @@
                 "source": "CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\media\\images\\ubuntu-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\images\\ubuntu-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
