@@ -17,4 +17,4 @@ Install base apps
 Install util apps
 #>
 
-#Requires -RunAsAdministrator
+# Requires -RunAsAdministrator

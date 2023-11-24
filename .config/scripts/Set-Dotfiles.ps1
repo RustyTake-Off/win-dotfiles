@@ -52,6 +52,7 @@ if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
     Write-Output "Creating 'personal' folder"
 }
 
+# Set dotfiles
 if (-not (Test-Path -Path "$env:USERPROFILE\.dotfiles" -PathType Container)) {
     if (Get-Command git) {
         git clone --bare 'https://github.com/RustyTake-Off/win-dotfiles.git' "$env:USERPROFILE\.dotfiles"
@@ -67,6 +68,7 @@ if (-not (Test-Path -Path "$env:USERPROFILE\.dotfiles" -PathType Container)) {
     git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE pull
 }
 
+# Set PowerShell profiles
 $PowerShellProfilePath = "$env:USERPROFILE\Documents\PowerShell"
 if ($ConfigPowerShellProfileFiles = Get-ChildItem -Path $ConfigPowerShellProfilePath -File -Recurse) {
     if (-not (Test-Path -Path $PowerShellProfilePath -PathType Container)) {
@@ -83,6 +85,7 @@ if ($ConfigPowerShellProfileFiles = Get-ChildItem -Path $ConfigPowerShellProfile
     Write-Output 'PowerShell profile config is missing from dotfiles'
 }
 
+# Set PowerShell scripts
 $PowerShellScriptsPath = "$env:USERPROFILE\Documents\PowerShell\Scripts"
 if ($ConfigScriptFiles = Get-ChildItem -Path $ConfigScriptsPath -File -Recurse) {
 
@@ -101,6 +104,7 @@ if ($ConfigScriptFiles = Get-ChildItem -Path $ConfigScriptsPath -File -Recurse) 
     Write-Output 'PowerShell scripts are missing from dotfiles'
 }
 
+# Set Windows Terminal config
 $WindowsTerminalPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath -File -Recurse) {
 
@@ -119,6 +123,7 @@ if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath
     Write-Output 'Windows Terminal config is missing from dotfiles'
 }
 
+# Set Winget config
 $WingetPath = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState"
 if ($ConfigWingetFiles = Get-ChildItem -Path $ConfigWingetPath -File -Recurse) {
 
@@ -139,6 +144,7 @@ if ($ConfigWingetFiles = Get-ChildItem -Path $ConfigWingetPath -File -Recurse) {
     Write-Output 'Winget config is missing from dotfiles'
 }
 
+# Set WSL config
 if ($ConfigWSLFiles = Get-ChildItem -Path $ConfigWSLPath -File -Recurse) {
 
     if (-not (Test-Path -Path "$env:USERPROFILE\.wslconfig" -PathType Leaf)) {
