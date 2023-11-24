@@ -43,7 +43,7 @@ function ll { Get-ChildItem }
 function cls { Clear-Host }
 
 # Dotfiles
-function dotf {
+function dot {
     git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE $Args
 }
 
