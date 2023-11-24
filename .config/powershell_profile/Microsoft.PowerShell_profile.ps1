@@ -25,6 +25,7 @@ oh-my-posh init pwsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/
 # Aliases
 Set-Alias -Name 'g' -Value 'git'
 Set-Alias -Name 'wig' -Value 'winget'
+Set-Alias -Name 'sudo' -Value 'admin'
 
 # Functions
 function hm { Set-Location $env:USERPROFILE }
@@ -52,6 +53,9 @@ function md5 { Get-FileHash -Algorithm MD5 $Args }
 function sha1 { Get-FileHash -Algorithm SHA1 $Args }
 function sha256 { Get-FileHash -Algorithm SHA256 $Args }
 
+function admin {
+    Start-Process wt -ArgumentList "--startingDirectory=$(Get-Location)" -Verb RunAs
+}
 function touch ([String]$File) {
     '' | Out-File -FilePath $File -Encoding ASCII
 }
