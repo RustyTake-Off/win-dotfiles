@@ -112,11 +112,53 @@ if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath
         New-Item -Path $WindowsTerminalPath -ItemType Directory
 
         foreach ($File in $ConfigWindowsTerminalFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigWindowsTerminalPath\$($File.Name)" -TargetToLink "$WindowsTerminalPath\settings.json"
+            $SourceToCopy = "$ConfigWindowsTerminalPath\$($File.Name)"
+            $TargetToCopy = "$WindowsTerminalPath\settings.json"
+            if ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (-not (Test-Path -Path $TargetToCopy -PathType Leaf))) {
+                Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
+                Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
+            } elseif ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (Test-Path -Path $TargetToCopy -PathType Leaf)) {
+                $HashOne = Get-FileHash -Path $SourceToCopy -Algorithm SHA256
+                $HashTwo = Get-FileHash -Path $TargetToCopy -Algorithm SHA256
+
+                if ($HashOne.Hash -ne $HashTwo.Hash) {
+                    Remove-Item -Path $TargetToCopy -Force
+                    Write-Output "Removing $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
+                    Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
+                    Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
+                } else {
+                    Write-Output "Config already set: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
+                }
+            } elseif (-not (Test-Path -Path $SourceToCopy -PathType Leaf)) {
+                Write-Error "SourceToCopy doesn't exist in dotfiles"
+            }
+
+            # Invoke-SetSymLinks -SourceToLink "$ConfigWindowsTerminalPath\$($File.Name)" -TargetToLink "$WindowsTerminalPath\settings.json"
         }
     } else {
         foreach ($File in $ConfigWindowsTerminalFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigWindowsTerminalPath\$($File.Name)" -TargetToLink "$WindowsTerminalPath\settings.json"
+            $SourceToCopy = "$ConfigWindowsTerminalPath\$($File.Name)"
+            $TargetToCopy = "$WindowsTerminalPath\settings.json"
+            if ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (-not (Test-Path -Path $TargetToCopy -PathType Leaf))) {
+                Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
+                Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
+            } elseif ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (Test-Path -Path $TargetToCopy -PathType Leaf)) {
+                $HashOne = Get-FileHash -Path $SourceToCopy -Algorithm SHA256
+                $HashTwo = Get-FileHash -Path $TargetToCopy -Algorithm SHA256
+
+                if ($HashOne.Hash -ne $HashTwo.Hash) {
+                    Remove-Item -Path $TargetToCopy -Force
+                    Write-Output "Removing $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
+                    Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
+                    Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
+                } else {
+                    Write-Output "Config already set: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
+                }
+            } elseif (-not (Test-Path -Path $SourceToCopy -PathType Leaf)) {
+                Write-Error "SourceToCopy doesn't exist in dotfiles"
+            }
+
+            # Invoke-SetSymLinks -SourceToLink "$ConfigWindowsTerminalPath\$($File.Name)" -TargetToLink "$WindowsTerminalPath\settings.json"
         }
     }
 } else {
