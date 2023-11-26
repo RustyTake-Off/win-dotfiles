@@ -66,10 +66,11 @@ function grep {
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [String[]] $FileName,
-        [Parameter(Position = 1, Mandatory = $true)]
+        [Parameter(Position = 1, Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [String] $Pattern
     )
     process {
+        Write-Output "`nSearching for pattern - $Pattern - in file(s) $FileName"
         foreach ($File in $FileName) {
             Get-Content -Path $File | Select-String -Pattern $Pattern | ForEach-Object {
                 $_ | Select-Object `
