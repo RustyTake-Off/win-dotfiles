@@ -53,6 +53,7 @@ function md5 { Get-FileHash -Algorithm MD5 $Args }
 function sha1 { Get-FileHash -Algorithm SHA1 $Args }
 function sha256 { Get-FileHash -Algorithm SHA256 $Args }
 
+# Linux like functions
 function admin {
     param (
         [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
@@ -68,7 +69,7 @@ function admin {
     }
 }
 function touch ([String]$File) {
-    '' | Out-File -FilePath $File -Encoding ASCII
+    Write-Output '' | Out-File -FilePath $File -Encoding ASCII
 }
 function which {
     Get-Command -Name $Args | Select-Object -ExpandProperty Path
