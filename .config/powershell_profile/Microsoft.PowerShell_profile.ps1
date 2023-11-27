@@ -54,7 +54,18 @@ function sha1 { Get-FileHash -Algorithm SHA1 $Args }
 function sha256 { Get-FileHash -Algorithm SHA256 $Args }
 
 function admin {
-    Start-Process wt -ArgumentList "--startingDirectory=$(Get-Location)" -Verb RunAs
+    param (
+        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
+        [String] $Command
+    )
+    if (-not $Command) {
+        Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -ExecutionPolicy Bypass -Command `
+        cd $(Get-Location)"
+    } else {
+        Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -ExecutionPolicy Bypass -Command `
+        cd $(Get-Location) `
+        $Command"
+    }
 }
 function touch ([String]$File) {
     '' | Out-File -FilePath $File -Encoding ASCII
