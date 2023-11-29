@@ -1,0 +1,92 @@
+# ╒══════╗        ╒═══════╗
+# │ ╓──┐ ║════════╗  ╓─┐  ║
+# │ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
+# │ ╓─┐ ╔╝  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
+# │ ║ │ ╚╗  │  ║  │  ╚═╛  ║
+# └─╜ └──╜  └──╜  └───────╜
+# Starship config.
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = '''$os$username$hostname$kubernetes$directory$git_branch$git_status'''
+
+add_newline = false
+command_timeout = 1000
+
+[character]
+success_symbol = ''
+error_symbol = ''
+
+[os]
+format = '[$symbol]($style) '
+style = 'bold white'
+disabled = false
+
+[os.symbols]
+Windows = ''
+Ubuntu = ''
+Macos = '󰀵'
+
+[username]
+format = '[$user]($style)'
+style_user = 'blue bold'
+style_root = 'red bold'
+show_always = true
+disabled = false
+
+[hostname]
+format = '@[$hostname]($style) '
+style = 'bold yellow'
+ssh_only = false
+disabled = false
+
+[directory]
+format = 'at [$path]($style)[$read_only]($read_only_style) '
+truncation_length = 1
+truncation_symbol = '…/'
+read_only = ''
+read_only_style = 'red'
+
+[git_branch]
+format = 'via [$branch]($style) '
+truncation_symbol = '…/'
+style = 'bold green'
+
+[git_status]
+format = '[$all_status$ahead_behind]($style)'
+ahead = '⇡${count} '
+behind = '⇣${count} '
+conflicted = '🏳${count} '
+deleted = '${count} '
+diverged = '⇕⇡${ahead_count}⇣${behind_count} '
+modified = '${count} '
+renamed = '襁${count}'
+staged = '[++\($count\)](green) '
+stashed = '${count}'
+untracked = '${count} '
+up_to_date = ''
+style = 'bold green'
+
+# Tools and languages
+[docker_context]
+disabled = true
+
+[kubernetes]
+format = 'via [󱃾 $context\($namespace\)]($style) '
+style = 'bold purple'
+disabled = false
+
+[helm]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[python]
+disabled = true
+
+[terraform]
+disabled = true
+
+[vagrant]
+disabled = true
