@@ -55,17 +55,13 @@ function sha256 { Get-FileHash -Algorithm SHA256 $Args }
 
 # Linux like functions
 function admin {
-    param (
-        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
-        [String] $Command
-    )
-    if (-not $Command) {
+    if (-not $Args) {
         Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -ExecutionPolicy Bypass -Command `
         cd $(Get-Location)"
     } else {
         Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -ExecutionPolicy Bypass -Command `
         cd $(Get-Location) `
-        $Command"
+        $Args"
     }
 }
 function touch ([String]$File) {
