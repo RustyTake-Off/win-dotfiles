@@ -19,8 +19,8 @@ function Reset-VSCProfile {
     . (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.VSCode_profile.ps1')
 }
 
-# Set oh-my-posh theme
-oh-my-posh init pwsh --config 'https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/atomicBit.omp.json' | Invoke-Expression
+# Init Starship
+Invoke-Expression (&starship init powershell)
 
 # Aliases
 Set-Alias -Name 'g' -Value 'git'
@@ -100,9 +100,6 @@ function pubip6 { (Invoke-WebRequest -Uri 'https://ifconfig.me/ip').Content }
 
 # z
 Import-Module -Name z
-
-# Terminal-Icons
-Import-Module -Name Terminal-Icons
 
 # PSReadLine
 $PSMinimumVersion = [Version]'7.1.999'
