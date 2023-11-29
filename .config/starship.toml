@@ -8,7 +8,7 @@
 
 "$schema" = 'https://starship.rs/config-schema.json'
 
-format = '''$os$username$hostname$kubernetes$directory$git_branch$git_status'''
+format = '$os$username$hostname$kubernetes$directory$nodejs$git_branch$git_status'
 
 add_newline = false
 command_timeout = 1000
@@ -48,45 +48,38 @@ read_only = ''
 read_only_style = 'red'
 
 [git_branch]
-format = 'via [$branch]($style) '
+format = '\[[$branch]($style) '
 truncation_symbol = '…/'
 style = 'bold green'
 
 [git_status]
-format = '[$all_status$ahead_behind]($style)'
+format = '[$all_status$ahead_behind]($style)\] '
 ahead = '⇡${count} '
 behind = '⇣${count} '
 conflicted = '🏳${count} '
 deleted = '${count} '
 diverged = '⇕⇡${ahead_count}⇣${behind_count} '
 modified = '${count} '
-renamed = '襁${count}'
+renamed = '襁${count} '
 staged = '[++\($count\)](green) '
-stashed = '${count}'
+stashed = '${count} '
 untracked = '${count} '
 up_to_date = ''
 style = 'bold green'
 
 # Tools and languages
-[docker_context]
-disabled = true
-
 [kubernetes]
-format = 'via [󱃾 $context\($namespace\)]($style) '
+format = '\[[󱃾 $context\($namespace\)]($style)\] '
 style = 'bold purple'
 disabled = false
 
-[helm]
-disabled = true
+[python]
+format = '\[[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style)\]'
+pyenv_version_name = true
+style = 'bold yellow'
+disabled = false
 
 [nodejs]
-disabled = true
-
-[python]
-disabled = true
-
-[terraform]
-disabled = true
-
-[vagrant]
-disabled = true
+format = '\[[$symbol($version)]($style)\] '
+style = 'bold orange'
+disabled = false
