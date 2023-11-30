@@ -48,7 +48,7 @@ read_only = ''
 read_only_style = 'red'
 
 [git_branch]
-format = '\[[$branch]($style) '
+format = '\[ [$branch]($style) '
 truncation_symbol = '…/'
 style = 'bold green'
 
