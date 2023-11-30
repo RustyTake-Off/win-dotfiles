@@ -4,6 +4,7 @@
 # Except
 !.config/
 !docs/
+!.gitconfig
 !.gitignore
 !LICENSE
 !README.md
