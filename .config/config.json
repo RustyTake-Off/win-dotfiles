@@ -109,11 +109,11 @@
                 "name": "Microsoft.VisualStudioCode",
                 "source": "winget"
             }
-        ],
-        "psmodules": [
-            "PSReadLine",
-            "TerminalIcons",
-            "z"
         ]
-    }
+    },
+    "psmodules": [
+        "PSReadLine",
+        "TerminalIcons",
+        "z"
+    ]
 }
