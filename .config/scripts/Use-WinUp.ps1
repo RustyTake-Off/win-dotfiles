@@ -11,7 +11,8 @@
 Script for setting up Windows.
 
 .DESCRIPTION
-This script makes the configuration of a Windows environment easier and more convenient by downloading drivers, installing fonts applications, and PowerShell modules.
+This script makes the configuration of a Windows environment easier and more convenient by downloading drivers,
+installing fonts applications, and PowerShell modules.
 
 .NOTES
 You might want to not change the Execution Policy permanently so to change it only for the current process
@@ -96,6 +97,7 @@ function Set-Directory {
     .DESCRIPTION
     Creates new directory.
     #>
+
     param (
         [Parameter(Mandatory = $true)]
         [String] $DirectoryPath
@@ -118,6 +120,7 @@ function Invoke-Download {
     .DESCRIPTION
     Invokes download.
     #>
+
     param (
         [Parameter(Mandatory = $true)]
         [String] $Url,
@@ -144,7 +147,8 @@ function Invoke-Download {
 function Install-Fonts {
     <#
     .DESCRIPTION
-    Installs TrueType (.ttf) or OpenType (.otf) fonts, copying them to the system fonts directory and registering them in the Registry.
+    Installs TrueType (.ttf) or OpenType (.otf) fonts, copying them to the system fonts directory and registering
+    them in the Registry.
     #>
 
     param (
@@ -319,6 +323,7 @@ function Invoke-CTT {
     Write-Host 'Invoke complete!' -ForegroundColor Green
 }
 
+# Switch with possible commands
 switch ($Command) {
     'drivers' {
         Invoke-GetDrivers
