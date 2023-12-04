@@ -7,14 +7,352 @@
 # WinUp - script for setting up Windows.
 
 <#
-Install all updates (manually)
-Install all drivers (manually)
-Install fonts
-Invoke CTT
-Install PowerShell modules
-Copy ssh keys
-Install base apps
-Install util apps
+.SYNOPSIS
+Script for setting up Windows.
+
+.DESCRIPTION
+This script makes the configuration of a Windows environment easier and more convenient by downloading drivers, installing fonts applications, and PowerShell modules.
+
+.EXAMPLE
+Downloads drivers
+Use-WinUp.ps1 -Command drivers
+
+Downloads and installs fonts
+Use-WinUp.ps1 -Command fonts
+
+Invokes the CTT - winutil script
+Use-WinUp.ps1 -Command ctt
+
+Installs PowerShell modules
+Use-WinUp.ps1 -Command psmods
+
+Installs base applications
+Use-WinUp.ps1 -Command apps -SubCommand base
+
+Installs utility applications
+Use-WinUp.ps1 -Command apps -SubCommand base
+
+Prints help message
+Use-WinUp.ps1 -Command help
+
+.LINK
+Repository      -   "https://github.com/RustyTake-Off/win-dotfiles",
+Config file     -   "https://github.com/RustyTake-Off/win-dotfiles/blob/main/.config/config.json",
+Script file     -   "https://github.com/RustyTake-Off/win-dotfiles/blob/main/.config/scripts/Use-WinUp.ps1"
 #>
 
-# Requires -RunAsAdministrator
+#Requires -RunAsAdministrator
+
+[CmdletBinding(SupportsShouldProcess)]
+
+param (
+    [Parameter(Mandatory = $false, Position = 0)]
+    [ValidateSet('drivers', 'fonts', 'ctt', 'psmods', 'apps', 'help')]
+    [String] $Command,
+
+    [Parameter(Mandatory = $false, Position = 1)]
+    [ValidateSet('base', 'util', 'help')]
+    [String] $SubCommand
+)
+
+# ================================================================================
+# Main variables
+$WinUpPath = Join-Path -Path "$env:USERPROFILE\Desktop" -ChildPath 'winup'
+$ConfigPath = "$env:USERPROFILE\.config\config.json"
+if (Test-Path -Path $ConfigPath) {
+    $WinUpConfig = Get-Content -Path $ConfigPath | ConvertFrom-Json
+} else {
+    try {
+        $WinUpConfig = Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config/config.json'
+    } catch {
+        Write-Error $_.Exception.Message
+        Write-Error $_.ScriptStackTrace
+        Exit
+    }
+}
+
+# ================================================================================
+# Helper variables
+$UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
+
+# ================================================================================
+# Helper functions
+function Set-Directory {
+    <#
+    .DESCRIPTION
+    Creates new directory.
+    #>
+    param (
+        [Parameter(Mandatory = $true)]
+        [String] $DirectoryPath
+    )
+
+    process {
+        try {
+            Write-Host 'Creating ' -NoNewline; Write-Host "$DirectoryPath..." -ForegroundColor Blue
+            New-Item -Path $DirectoryPath -ItemType Directory -ErrorAction SilentlyContinue > $null
+        } catch {
+            Write-Error "Failed to create $DirectoryPath"
+            Write-Error $_.Exception.Message
+            Write-Error $_.ScriptStackTrace
+        }
+    }
+}
+
+function Invoke-Download {
+    <#
+    .DESCRIPTION
+    Invokes download.
+    #>
+    param (
+        [Parameter(Mandatory = $true)]
+        [String] $Url,
+
+        [Parameter(Mandatory = $true)]
+        [String] $DirectoryPath
+    )
+
+    process {
+        $FileName = Split-Path -Path $DriverUrl -Leaf
+        $DownloadPath = Join-Path -Path $DirectoryPath -ChildPath $FileName
+
+        try {
+            Write-Host 'Downloading ' -NoNewline; Write-Host "$DriverUrl..." -ForegroundColor Blue
+            Invoke-WebRequest -Uri $DriverUrl -UserAgent $UserAgent -OutFile $DownloadPath -ErrorAction SilentlyContinue
+        } catch {
+            Write-Error "Failed to download $FileName"
+            Write-Error $_.Exception.Message
+            Write-Error $_.ScriptStackTrace
+        }
+    }
+}
+
+function Install-Fonts {
+    <#
+    .DESCRIPTION
+    Installs TrueType (.ttf) or OpenType (.otf) fonts, copying them to the system fonts directory and registering them in the Registry.
+    #>
+
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.IO.FileInfo]
+        [Object] $FontFile
+    )
+
+    process {
+        try {
+            $FontsGTF = [Windows.Media.GlyphTypeface]::New($FontFile.FullName)
+
+            $Family = $FontsGTF.Win32FamilyNames['en-US']
+            if ($null -eq $Family) {
+                $Family = $FontsGTF.Win32FamilyNames.Values.Item(0)
+            }
+
+            $Face = $FontsGTF.Win32FaceNames['en-US']
+            if ($null -eq $Face) {
+                $Face = $FontsGTF.Win32FaceNames.Values.Item(0)
+            }
+
+            $FontName = ("$Family $Face").Trim()
+            switch ($FontFile.Extension) {
+                '.ttf' {
+                    $FontName = "$FontName (TrueType)"
+                }
+                '.otf' {
+                    $FontName = "$FontName (OpenType)"
+                }
+            }
+
+            Write-Host 'Installing ' -NoNewline; Write-Host "$FontName..." -ForegroundColor Blue
+            if (-not (Test-Path (Join-Path -Path "$env:SystemRoot\fonts" -ChildPath $FontFile.Name))) {
+                Write-Host "Copying $FontName..."
+                Copy-Item -Path $FontFile.FullName -Destination (Join-Path -Path "$env:SystemRoot\fonts" -ChildPath $FontFile.Name) -Force
+            } else {
+                Write-Host "Font already exists: $FontName"
+            }
+
+            if (-not (Get-ItemProperty -Name $FontName -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Fonts' -ErrorAction SilentlyContinue)) {
+                Write-Host "Registering $FontName..."
+                New-ItemProperty -Name $FontName -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Fonts' -PropertyType String -Value $FontFile.Name -Force -ErrorAction SilentlyContinue > $null
+            } else {
+                Write-Host "Font already registered: $FontName"
+            }
+        } catch {
+            Write-Error "Error installing $FontName"
+            Write-Error $_.Exception.Message
+            Write-Error $_.ScriptStackTrace
+        }
+    }
+}
+
+# ================================================================================
+# Main functions
+function Invoke-GetDrivers {
+    <#
+    .DESCRIPTION
+    Downloads drivers.
+    #>
+
+    $DriversPath = Join-Path -Path $WinUpPath -ChildPath 'drivers'
+    if (-not (Test-Path -Path $DriversPath)) {
+        Set-Directory -DirectoryPath $DriversPath
+    }
+
+    Write-Host 'Downloading drivers...' -ForegroundColor Green
+    foreach ($DriverUrl in $WinUpConfig.drivers) {
+        Invoke-Download -DirectoryPath $DriversPath -Url $DriverUrl
+    }
+    Write-Host 'Download complete!' -ForegroundColor Green
+}
+
+function Invoke-InstallFonts {
+    <#
+    .DESCRIPTION
+    Downloads and installs fonts.
+    #>
+
+    $FontsPath = Join-Path $WinUpPath 'fonts'
+    if (-not (Test-Path -Path $FontsPath)) {
+        Set-Directory -DirectoryPath $FontsPath
+    }
+
+    Write-Host 'Downloading fonts...' -ForegroundColor Green
+    foreach ($FontUrl in $WinUpConfig.fonts) {
+        Invoke-Download -DirectoryPath $FontsPath -Url $FontUrl
+    }
+    Write-Host 'Download complete!' -ForegroundColor Green
+
+    $FontsZipFiles = Get-ChildItem -Path $FontsPath -Filter '*.zip'
+
+    Write-Host 'Extracting fonts...' -ForegroundColor Green
+    foreach ($ZipFile in $FontsZipFiles) {
+        $ExtractionDirectoryPath = Join-Path -Path $FontsPath -ChildPath $($ZipFile.BaseName)
+        Set-Directory -DirectoryPath $ExtractionDirectoryPath
+
+        Write-Host 'Extracting ' -NoNewline; Write-Host $ZipFile.Name -ForegroundColor Blue -NoNewline; Write-Host ' to ' -NoNewline; Write-Host $ExtractionDirectoryPath -ForegroundColor Blue
+        Expand-Archive -Path $ZipFile.FullName -DestinationPath $ExtractionDirectoryPath -Force
+        Remove-Item -Path $ZipFile.FullName -Force
+        Write-Host 'Extraction complete!' -ForegroundColor Green
+
+        Write-Host "Installing fonts $($ZipFile.BaseName)..." -ForegroundColor Green
+        $Fonts = Get-ChildItem -Path $ExtractionDirectoryPath | Where-Object { ($_.Name -like '*.ttf') -or ($_.Name -like '*.otf') }
+        Add-Type -AssemblyName PresentationCore
+        foreach ($FontItem in $Fonts) {
+            Install-Fonts -FontFile $FontItem.FullName
+        }
+        Write-Host "Installation of $($ZipFile.BaseName) complete!" -ForegroundColor Green
+    }
+}
+
+function Get-Apps {
+    <#
+    .DESCRIPTION
+    Installs some essential applications with winget.
+    #>
+
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('base', 'util')]
+        [String] $Type
+    )
+
+    Write-Host 'Installing applications...' -ForegroundColor Green
+    foreach ($App in $WinUpPath.apps.$Type) {
+        if (-not (winget list --exact --id $App.name)) {
+            Write-Host 'Installing ' -NoNewline; Write-Host "$App..." -ForegroundColor Blue
+            Start-Process -FilePath winget -ArgumentList "install --exact --id $($App.name) --source $($App.source) --silent --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
+        } else {
+            Write-Host 'App is already installed: ' -NoNewline; Write-Host $App -ForegroundColor Blue
+        }
+    }
+    Write-Host 'Installation complete!' -ForegroundColor Green
+}
+
+function Get-PSModules {
+    <#
+    .DESCRIPTION
+    Installs or updates PowerShell modules.
+    #>
+
+    Write-Host 'Installing Powershell modules...' -ForegroundColor Green
+    foreach ($Module in $WinUpPath.psmodules) {
+        if (-not (Get-Module -ListAvailable | Where-Object { $_.Name -like $Module })) {
+            Write-Host 'Installing ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
+            Start-Process -FilePath Install-Module -ArgumentList "-Name $Module -Repository PSGallery -Force"
+        } else {
+            Write-Host 'Module is already installed: ' -NoNewline; Write-Host $Module -ForegroundColor Blue
+            Write-Host 'Trying to update module: ' -NoNewline; Write-Host $Module -ForegroundColor Blue
+            Update-Module -Name $Module -Force
+        }
+    }
+    Write-Host 'Installation complete!' -ForegroundColor Green
+}
+
+function Invoke-CTT {
+    <#
+    .DESCRIPTION
+    Invokes the "CTT - winutil" utility by https://github.com/ChrisTitusTech.
+    #>
+
+    Write-Host 'Invoking CTT - winutil...' -ForegroundColor Green
+    try {
+        Invoke-WebRequest -useb 'https://christitus.com/win' | Invoke-Expression
+    } catch {
+        Write-Error 'Failed to invoke CTT - winutil'
+        Write-Error $_.Exception.Message
+        Write-Error $_.ScriptStackTrace
+    }
+    Write-Host 'Invoke complete!' -ForegroundColor Green
+}
+
+switch ($Command) {
+    'drivers' {
+        Invoke-GetDrivers
+    }
+    'fonts' {
+        Invoke-InstallFonts
+    }
+    'apps' {
+        switch ($SubCommand) {
+            'base' {
+                Get-Apps -Type $SubCommand
+            }
+            'util' {
+                Get-Apps -Type $SubCommand
+            }
+            'help' {
+                . $PSCommandPath -Command apps
+            }
+            default {
+                Write-Host 'Available commands:'`n -ForegroundColor Green
+                Write-Host @'
+        base    -   Installs base applications
+        util    -   Installs utility applications
+        help    -   Prints help message
+'@`n
+            }
+        }
+    }
+    'psmods' {
+        Get-PSModules
+    }
+    'ctt' {
+        Invoke-CTT
+    }
+    'help' {
+        . $PSCommandPath
+    }
+    default {
+        Write-Host 'Available commands:'`n -ForegroundColor Green
+        Write-Host @'
+        drivers     -   Downloads drivers
+        fonts       -   Downloads and installs fonts
+        ctt         -   Invokes the CTT - winutil script
+        psmods      -   Installs PowerShell modules
+        apps
+        :   base    -   Installs base applications
+        :   util    -   Installs utility applications
+        help        -   Prints help message
+'@`n
+    }
+}
