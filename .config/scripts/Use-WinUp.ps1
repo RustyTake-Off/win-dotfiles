@@ -14,7 +14,7 @@ Script for setting up Windows.
 This script makes the configuration of a Windows environment easier and more convenient by downloading drivers, installing fonts applications, and PowerShell modules.
 
 .NOTES
-You might want to not affect change the Execution Policy permanently so to change it only for current process
+You might want to not change the Execution Policy permanently so to change it only for the current process
 run the bellow command and then run the script.
 
 PS> Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
