@@ -13,27 +13,41 @@ Script for setting up Windows.
 .DESCRIPTION
 This script makes the configuration of a Windows environment easier and more convenient by downloading drivers, installing fonts applications, and PowerShell modules.
 
+.NOTES
+You might want to not affect change the Execution Policy permanently so to change it only for current process
+run the bellow command and then run the script.
+
+PS> Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+
+This script also needs to be run from elevated terminal as admin.
+
 .EXAMPLE
-Downloads drivers
 Use-WinUp.ps1 -Command drivers
+Downloads drivers
 
-Downloads and installs fonts
+.EXAMPLE
 Use-WinUp.ps1 -Command fonts
+Downloads and installs fonts
 
-Invokes the CTT - winutil script
+.EXAMPLE
 Use-WinUp.ps1 -Command ctt
+Invokes the CTT - winutil script
 
-Installs PowerShell modules
+.EXAMPLE
 Use-WinUp.ps1 -Command psmods
+Installs PowerShell modules
 
-Installs base applications
+.EXAMPLE
 Use-WinUp.ps1 -Command apps -SubCommand base
+Installs base applications
 
+.EXAMPLE
 Installs utility applications
 Use-WinUp.ps1 -Command apps -SubCommand base
 
-Prints help message
+.EXAMPLE
 Use-WinUp.ps1 -Command help
+Prints help message
 
 .LINK
 Repository      -   "https://github.com/RustyTake-Off/win-dotfiles",
