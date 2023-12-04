@@ -99,3 +99,19 @@ To use it, run this command:
 ```powershell
 admin Set-Dotfiles.ps1
 ```
+
+## Windows environment setup script
+
+> Note: Use-WinUp script also needs to be run as admin.
+
+Since it is a setup script you won't ❌ have `git` installed so to download this script run the bellow 👇 command which will get the script and save it on the desktop.
+
+```powershell
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config/scripts/Use-WinUp.ps1' -UseBasicParsing
+```
+
+You might want to not change the `Execution Policy` permanently 🧊 so to change it only for the current process run the bellow command and then use the script.
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+```
