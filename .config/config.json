@@ -106,6 +106,10 @@
                 "source": "winget"
             },
             {
+                "name": "Starship.Starship",
+                "source": "winget"
+            },
+            {
                 "name": "Microsoft.VisualStudioCode",
                 "source": "winget"
             }
