@@ -23,6 +23,10 @@ PS> Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 This script also needs to be run from elevated terminal as admin.
 
 .EXAMPLE
+Use-WinUp.ps1 -Command help
+Prints help message
+
+.EXAMPLE
 Use-WinUp.ps1 -Command drivers
 Downloads drivers
 
@@ -35,20 +39,24 @@ Use-WinUp.ps1 -Command ctt
 Invokes the CTT - winutil script
 
 .EXAMPLE
-Use-WinUp.ps1 -Command psmods
-Installs PowerShell modules
-
-.EXAMPLE
 Use-WinUp.ps1 -Command apps -SubCommand base
 Installs base applications
 
 .EXAMPLE
+Use-WinUp.ps1 -Command apps -SubCommand util
 Installs utility applications
-Use-WinUp.ps1 -Command apps -SubCommand base
 
 .EXAMPLE
-Use-WinUp.ps1 -Command help
-Prints help message
+Use-WinUp.ps1 -Command psmods
+Installs PowerShell modules
+
+.EXAMPLE
+Use-WinUp.ps1 -Command dots
+Invokes Dotfiles setup script
+
+.EXAMPLE
+Use-WinUp.ps1 -Command wsl -SubCommand Ubuntu-22.04
+Installs Ubuntu-22.04 on WSL
 
 .LINK
 Repository      -   "https://github.com/RustyTake-Off/win-dotfiles",
@@ -62,11 +70,13 @@ Script file     -   "https://github.com/RustyTake-Off/win-dotfiles/blob/main/.co
 
 param (
     [Parameter(Mandatory = $false, Position = 0)]
-    [ValidateSet('drivers', 'fonts', 'ctt', 'psmods', 'apps', 'help')]
+    [ValidateSet('drivers', 'fonts', 'ctt', 'psmods', 'apps', 'dots', 'wsl', 'help')]
+    [Alias('-c')]
     [String] $Command,
 
     [Parameter(Mandatory = $false, Position = 1)]
-    [ValidateSet('base', 'util', 'help')]
+    [ValidateSet('base', 'util', 'Debian', 'Ubuntu-22.04', 'Ubuntu-20.04', 'kali-linux', 'help')]
+    [Alias('-s')]
     [String] $SubCommand
 )
 
@@ -74,11 +84,12 @@ param (
 # Main variables
 $WinUpPath = Join-Path -Path "$env:USERPROFILE\Desktop" -ChildPath 'winup'
 $ConfigPath = "$env:USERPROFILE\.config\config.json"
+$RepositoryConfigUrl = 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config'
 if (Test-Path -Path $ConfigPath) {
     $WinUpConfig = Get-Content -Path $ConfigPath | ConvertFrom-Json
 } else {
     try {
-        $WinUpConfig = Invoke-RestMethod -Uri 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config/config.json'
+        $WinUpConfig = Invoke-RestMethod -Uri "$RepositoryConfigUrl/config.json"
     } catch {
         Write-Error $_.Exception.Message
         Write-Error $_.ScriptStackTrace
@@ -262,6 +273,23 @@ function Invoke-InstallFonts {
     }
 }
 
+function Invoke-CTT {
+    <#
+    .DESCRIPTION
+    Invokes the "CTT - winutil" utility by https://github.com/ChrisTitusTech.
+    #>
+
+    Write-Host 'Invoking CTT - winutil...' -ForegroundColor Green
+    try {
+        Invoke-WebRequest -useb 'https://christitus.com/win' | Invoke-Expression
+    } catch {
+        Write-Error 'Failed to invoke CTT - winutil'
+        Write-Error $_.Exception.Message
+        Write-Error $_.ScriptStackTrace
+    }
+    Write-Host 'Invoke complete!' -ForegroundColor Green
+}
+
 function Get-Apps {
     <#
     .DESCRIPTION
@@ -306,17 +334,40 @@ function Get-PSModules {
     Write-Host 'Installation complete!' -ForegroundColor Green
 }
 
-function Invoke-CTT {
+function Invoke-DotfilesScript {
     <#
     .DESCRIPTION
-    Invokes the "CTT - winutil" utility by https://github.com/ChrisTitusTech.
+    Invokes the Dotfiles setup script.
     #>
 
-    Write-Host 'Invoking CTT - winutil...' -ForegroundColor Green
+    Write-Host 'Invoking Dotfiles setup script...' -ForegroundColor Green
     try {
-        Invoke-WebRequest -useb 'https://christitus.com/win' | Invoke-Expression
+        Invoke-Expression (Invoke-WebRequest -Uri "$RepositoryConfigUrl/scripts/Set-Dotfiles.ps1" -UseBasicParsing).Content | Invoke-Expression
     } catch {
-        Write-Error 'Failed to invoke CTT - winutil'
+        Write-Error 'Failed to invoke Dotfiles setup script'
+        Write-Error $_.Exception.Message
+        Write-Error $_.ScriptStackTrace
+    }
+    Write-Host 'Invoke complete!' -ForegroundColor Green
+}
+
+function Install-WSL {
+    <#
+    .DESCRIPTION
+    Installs Windows Subsystem for Linux with different distributions.
+    #>
+
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Debian', 'Ubuntu-22.04', 'Ubuntu-20.04', 'kali-linux')]
+        [String] $Distribution
+    )
+
+    Write-Host 'Invoking Dotfiles setup script...' -ForegroundColor Green
+    try {
+        wsl --install --distribution $Distribution
+    } catch {
+        Write-Error 'Failed to invoke Dotfiles setup script'
         Write-Error $_.Exception.Message
         Write-Error $_.ScriptStackTrace
     }
@@ -330,6 +381,9 @@ switch ($Command) {
     }
     'fonts' {
         Invoke-InstallFonts
+    }
+    'ctt' {
+        Invoke-CTT
     }
     'apps' {
         switch ($SubCommand) {
@@ -345,9 +399,9 @@ switch ($Command) {
             default {
                 Write-Host 'Available commands:'`n -ForegroundColor Green
                 Write-Host @'
+        help    -   Prints help message
         base    -   Installs base applications
         util    -   Installs utility applications
-        help    -   Prints help message
 '@`n
             }
         }
@@ -355,8 +409,37 @@ switch ($Command) {
     'psmods' {
         Get-PSModules
     }
-    'ctt' {
-        Invoke-CTT
+    'dots' {
+        Invoke-DotfilesScript
+    }
+    'wsl' {
+        switch ($SubCommand) {
+            'Debian' {
+                Install-WSL -Distribution $SubCommand
+            }
+            'Ubuntu-22.04' {
+                Install-WSL -Distribution $SubCommand
+            }
+            'Ubuntu-20.04' {
+                Install-WSL -Distribution $SubCommand
+            }
+            'kali-linux' {
+                Install-WSL -Distribution $SubCommand
+            }
+            'help' {
+                . $PSCommandPath -Command wsl
+            }
+            default {
+                Write-Host 'Available commands:'`n -ForegroundColor Green
+                Write-Host @'
+        help            -   Prints help message
+        Debian          -   Installs Debian on WSL
+        Ubuntu-22.04    -   Installs Ubuntu-22.04 on WSL
+        Ubuntu-20.04    -   Installs Ubuntu-22.04 on WSL
+        kali-linux      -   Installs kali-linux on WSL
+'@`n
+            }
+        }
     }
     'help' {
         . $PSCommandPath
@@ -364,14 +447,20 @@ switch ($Command) {
     default {
         Write-Host 'Available commands:'`n -ForegroundColor Green
         Write-Host @'
+        help        -   Prints help message
         drivers     -   Downloads drivers
         fonts       -   Downloads and installs fonts
         ctt         -   Invokes the CTT - winutil script
-        psmods      -   Installs PowerShell modules
         apps
         :   base    -   Installs base applications
         :   util    -   Installs utility applications
-        help        -   Prints help message
+        psmods      -   Installs PowerShell modules
+        dots        -   Invokes Dotfiles setup script
+        wsl
+        :   Debian          -   Installs Debian on WSL
+        :   Ubuntu-22.04    -   Installs Ubuntu-22.04 on WSL
+        :   Ubuntu-20.04    -   Installs Ubuntu-22.04 on WSL
+        :   kali-linux      -   Installs kali-linux on WSL
 '@`n
     }
 }
