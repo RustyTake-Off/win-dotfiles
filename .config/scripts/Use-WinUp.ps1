@@ -141,12 +141,12 @@ function Invoke-Download {
     )
 
     process {
-        $FileName = Split-Path -Path $DriverUrl -Leaf
+        $FileName = Split-Path -Path $Url -Leaf
         $DownloadPath = Join-Path -Path $DirectoryPath -ChildPath $FileName
 
         try {
-            Write-Host 'Downloading ' -NoNewline; Write-Host "$DriverUrl..." -ForegroundColor Blue
-            Invoke-WebRequest -Uri $DriverUrl -UserAgent $UserAgent -OutFile $DownloadPath -ErrorAction SilentlyContinue
+            Write-Host 'Downloading ' -NoNewline; Write-Host "$Url..." -ForegroundColor Blue
+            Invoke-WebRequest -Uri $Url -UserAgent $UserAgent -OutFile $DownloadPath -ErrorAction SilentlyContinue
         } catch {
             Write-Error "Failed to download $FileName"
             Write-Error $_.Exception.Message
