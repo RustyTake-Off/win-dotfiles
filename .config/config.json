@@ -110,6 +110,10 @@
                 "source": "winget"
             },
             {
+                "name": "BurntSushi.ripgrep.MSVC",
+                "source": "winget"
+            },
+            {
                 "name": "Microsoft.VisualStudioCode",
                 "source": "winget"
             }
