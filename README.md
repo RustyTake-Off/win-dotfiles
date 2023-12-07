@@ -107,7 +107,7 @@ admin Set-Dotfiles.ps1
 Since it is a setup script you won't ❌ have `git` installed so to download this script run the bellow 👇 command which will get the script and save it on the desktop.
 
 ```powershell
-Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config/scripts/Use-WinUp.ps1' -UseBasicParsing
+Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config/scripts/Use-WinUp.ps1' -UseBasicParsing -OutFile "$env:USERPROFILE\Desktop\Use-WinUp.ps1"
 ```
 
 You might want to not change the `Execution Policy` permanently 🧊 so to change it only for the current process run the bellow command and then use the script.
