@@ -1,4 +1,5 @@
-﻿
+﻿#Requires -RunAsAdministrator
+
 <#
 ╒══════╗        ╒═══════╗
 │ ╓──┐ ║════════╗  ╓─┐  ║
@@ -64,8 +65,6 @@ Repository      -   "https://github.com/RustyTake-Off/win-dotfiles",
 Config file     -   "https://github.com/RustyTake-Off/win-dotfiles/blob/main/.config/config.json",
 Script file     -   "https://github.com/RustyTake-Off/win-dotfiles/blob/main/.config/scripts/Use-WinUp.ps1"
 #>
-
-#Requires -RunAsAdministrator
 
 [CmdletBinding(SupportsShouldProcess)]
 
