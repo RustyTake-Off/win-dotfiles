@@ -1,14 +1,13 @@
-﻿<#
-╒══════╗        ╒═══════╗
-│ ╓──┐ ║════════╗  ╓─┐  ║
-│ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
-│ ╓─┐ ╔╝  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
-│ ║ │ ╚╗  │  ║  │  ╚═╛  ║
-└─╜ └──╜  └──╜  └───────╜
-Script for setting up Windows dotfiles.
-#>
+﻿#Requires -RunAsAdministrator
 
-#Requires -RunAsAdministrator
+# ╒══════╗        ╒═══════╗
+# │ ╓──┐ ║════════╗  ╓─┐  ║
+# │ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
+# │ ╓─┐ ╔╝  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
+# │ ║ │ ╚╗  │  ║  │  ╚═╛  ║
+# └─╜ └──╜  └──╜  └───────╜
+# Script for setting up Windows dotfiles.
+
 
 $ConfigPowerShellProfilePath = "$env:USERPROFILE\.config\powershell_profile"
 $ConfigScriptsPath = "$env:USERPROFILE\.config\scripts"
