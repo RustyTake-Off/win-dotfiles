@@ -304,9 +304,9 @@ function Get-Apps {
 
     Write-Host 'Installing applications...' -ForegroundColor Green
     foreach ($App in $WinUpConfig.apps.$Type) {
-        if (-not (winget list --exact --id $App.name)) {
+        if (-not (winget list --exact --id ($App | Select-Object 'name'))) {
             Write-Host 'Installing ' -NoNewline; Write-Host "$App..." -ForegroundColor Blue
-            Start-Process winget -ArgumentList "install --exact --id $($App.name) --source $($App.source) --silent --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
+            Start-Process winget -ArgumentList "install --exact --id $($App | Select-Object 'name') --source $($App | Select-Object 'source') --silent --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
         } else {
             Write-Host 'App is already installed: ' -NoNewline; Write-Host $App -ForegroundColor Blue
         }
@@ -324,7 +324,7 @@ function Get-PSModules {
     foreach ($Module in $WinUpConfig.psmodules) {
         if (-not (Get-Module -ListAvailable | Where-Object { $_.Name -like $Module })) {
             Write-Host 'Installing ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
-            Start-Process Install-Module -ArgumentList "-Name $Module -Repository PSGallery -Force"
+            Install-Module -Name $Module -Repository PSGallery -Force
         } else {
             Write-Host 'Module is already installed: ' -NoNewline; Write-Host $Module -ForegroundColor Blue
             Write-Host 'Trying to update module: ' -NoNewline; Write-Host $Module -ForegroundColor Blue
