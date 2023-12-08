@@ -1,5 +1,4 @@
-﻿#Requires -RunAsAdministrator
-
+﻿
 # ╒══════╗        ╒═══════╗
 # │ ╓──┐ ║════════╗  ╓─┐  ║
 # │ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
@@ -7,6 +6,28 @@
 # │ ║ │ ╚╗  │  ║  │  ╚═╛  ║
 # └─╜ └──╜  └──╜  └───────╜
 # Script for setting up Windows dotfiles.
+
+#Requires -RunAsAdministrator
+
+<#
+.SYNOPSIS
+Script for setting up Windows dotfiles.
+
+.DESCRIPTION
+This script makes it easier to set up dotfiles on a Windows system. It creates symbolic links and copies necessary configuration files to configure PowerShell profiles, scripts, Windows Terminal, Winget, and WSL configs.
+
+.NOTES
+You might want to not change the Execution Policy permanently so to change it only for the current process
+run the bellow command and then run the script.
+
+PS> Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+
+This script also needs to be run from elevated terminal as admin.
+
+.LINK
+Repository      -   "https://github.com/RustyTake-Off/win-dotfiles",
+Script file     -   "https://github.com/RustyTake-Off/win-dotfiles/blob/main/.config/scripts/Set-Dotfiles.ps1"
+#>
 
 $ConfigPowerShellProfilePath = "$env:USERPROFILE\.config\powershell_profile"
 $ConfigScriptsPath = "$env:USERPROFILE\.config\scripts"
