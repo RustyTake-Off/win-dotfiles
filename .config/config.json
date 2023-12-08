@@ -114,6 +114,10 @@
                 "source": "winget"
             },
             {
+                "name": "ajeetdsouza.zoxide",
+                "source": "winget"
+            },
+            {
                 "name": "Microsoft.VisualStudioCode",
                 "source": "winget"
             }
