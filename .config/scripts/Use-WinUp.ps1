@@ -1,12 +1,12 @@
-﻿# ╒══════╗        ╒═══════╗
-# │ ╓──┐ ║════════╗  ╓─┐  ║
-# │ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
-# │ ╓─┐ ╔╝  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
-# │ ║ │ ╚╗  │  ║  │  ╚═╛  ║
-# └─╜ └──╜  └──╜  └───────╜
-# WinUp - script for setting up Windows.
+﻿<#
+╒══════╗        ╒═══════╗
+│ ╓──┐ ║════════╗  ╓─┐  ║
+│ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
+│ ╓─┐ ╔╝  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
+│ ║ │ ╚╗  │  ║  │  ╚═╛  ║
+└─╜ └──╜  └──╜  └───────╜
+WinUp - script for setting up Windows.
 
-<#
 .SYNOPSIS
 Script for setting up Windows.
 
@@ -303,7 +303,7 @@ function Get-Apps {
     )
 
     Write-Host 'Installing applications...' -ForegroundColor Green
-    foreach ($App in $WinUpPath.apps.$Type) {
+    foreach ($App in $WinUpConfig.apps.$Type) {
         if (-not (winget list --exact --id $App.name)) {
             Write-Host 'Installing ' -NoNewline; Write-Host "$App..." -ForegroundColor Blue
             Start-Process -FilePath winget -ArgumentList "install --exact --id $($App.name) --source $($App.source) --silent --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
@@ -321,7 +321,7 @@ function Get-PSModules {
     #>
 
     Write-Host 'Installing Powershell modules...' -ForegroundColor Green
-    foreach ($Module in $WinUpPath.psmodules) {
+    foreach ($Module in $WinUpConfig.psmodules) {
         if (-not (Get-Module -ListAvailable | Where-Object { $_.Name -like $Module })) {
             Write-Host 'Installing ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
             Start-Process -FilePath Install-Module -ArgumentList "-Name $Module -Repository PSGallery -Force"
@@ -342,7 +342,7 @@ function Invoke-DotfilesScript {
 
     Write-Host 'Invoking Dotfiles setup script...' -ForegroundColor Green
     try {
-        Invoke-Expression (Invoke-WebRequest -Uri "$RepositoryConfigUrl/scripts/Set-Dotfiles.ps1" -UseBasicParsing).Content | Invoke-Expression
+        Invoke-Expression (Invoke-WebRequest -Uri "$RepositoryConfigUrl/scripts/Set-Dotfiles.ps1" -UseBasicParsing).Content
     } catch {
         Write-Error 'Failed to invoke Dotfiles setup script'
         Write-Error $_.Exception.Message

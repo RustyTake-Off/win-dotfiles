@@ -1,10 +1,12 @@
-﻿# ╒══════╗        ╒═══════╗
-# │ ╓──┐ ║════════╗  ╓─┐  ║
-# │ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
-# │ ╓─┐ ╔╝  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
-# │ ║ │ ╚╗  │  ║  │  ╚═╛  ║
-# └─╜ └──╜  └──╜  └───────╜
-# Script for setting up Windows dotfiles.
+﻿<#
+╒══════╗        ╒═══════╗
+│ ╓──┐ ║════════╗  ╓─┐  ║
+│ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
+│ ╓─┐ ╔╝  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
+│ ║ │ ╚╗  │  ║  │  ╚═╛  ║
+└─╜ └──╜  └──╜  └───────╜
+Script for setting up Windows dotfiles.
+#>
 
 #Requires -RunAsAdministrator
 
