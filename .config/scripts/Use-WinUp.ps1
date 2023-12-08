@@ -1,4 +1,3 @@
-﻿
 # ╒══════╗        ╒═══════╗
 # │ ╓──┐ ║════════╗  ╓─┐  ║
 # │ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
@@ -84,10 +83,10 @@ param (
 # ================================================================================
 # Main variables
 $WinUpPath = Join-Path -Path "$env:USERPROFILE\Desktop" -ChildPath 'winup'
-$ConfigPath = "$env:USERPROFILE\.config\config.json"
+$ConfigPath = "$env:USERPROFILE\.config"
 $RepositoryConfigUrl = 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config'
-if (Test-Path -Path $ConfigPath) {
-    $WinUpConfig = Get-Content -Path $ConfigPath | ConvertFrom-Json
+if (Test-Path -Path "$ConfigPath\config.json") {
+    $WinUpConfig = Get-Content -Path "$ConfigPath\config.json" | ConvertFrom-Json
 } else {
     try {
         $WinUpConfig = Invoke-RestMethod -Uri "$RepositoryConfigUrl/config.json"
@@ -343,7 +342,11 @@ function Invoke-DotfilesScript {
 
     Write-Host 'Invoking Dotfiles setup script...' -ForegroundColor Green
     try {
-        (Invoke-WebRequest -Uri "$RepositoryConfigUrl/scripts/Set-Dotfiles.ps1" -UseBasicParsing).Content | Invoke-Expression
+        if (Test-Path -Path "$ConfigPath\scripts\Set-Dotfiles.ps1") {
+            Invoke-Expression "$ConfigPath\scripts\Set-Dotfiles.ps1"
+        } else {
+            (Invoke-WebRequest -Uri "$RepositoryConfigUrl/scripts/Set-Dotfiles.ps1" -UseBasicParsing).Content | Invoke-Expression
+        }
     } catch {
         Write-Error 'Failed to invoke Dotfiles setup script'
         Write-Error $_.Exception.Message
