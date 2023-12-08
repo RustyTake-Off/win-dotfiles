@@ -125,7 +125,6 @@
     },
     "psmodules": [
         "PSReadLine",
-        "TerminalIcons",
-        "z"
+        "TerminalIcons"
     ]
 }
