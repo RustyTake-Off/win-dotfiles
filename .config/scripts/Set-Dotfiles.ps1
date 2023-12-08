@@ -8,7 +8,6 @@
 # └─╜ └──╜  └──╜  └───────╜
 # Script for setting up Windows dotfiles.
 
-
 $ConfigPowerShellProfilePath = "$env:USERPROFILE\.config\powershell_profile"
 $ConfigScriptsPath = "$env:USERPROFILE\.config\scripts"
 $ConfigWindowsTerminalPath = "$env:USERPROFILE\.config\windows_terminal"
