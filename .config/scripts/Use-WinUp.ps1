@@ -304,11 +304,13 @@ function Get-Apps {
 
     Write-Host 'Installing applications...' -ForegroundColor Green
     foreach ($App in $WinUpConfig.apps.$Type) {
-        if (-not (winget list --exact --id ($App | Select-Object 'name'))) {
-            Write-Host 'Installing ' -NoNewline; Write-Host "$App..." -ForegroundColor Blue
-            Start-Process winget -ArgumentList "install --exact --id $($App | Select-Object 'name') --source $($App | Select-Object 'source') --silent --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
+        $AppName = $App | Select-Object 'name'
+        $AppSource = $App | Select-Object 'source'
+        if (-not (winget list --exact --id $AppName)) {
+            Write-Host 'Installing ' -NoNewline; Write-Host "$($AppName)..." -ForegroundColor Blue
+            Start-Process winget -ArgumentList "install --exact --id $($AppName) --source $($AppSource) --silent --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
         } else {
-            Write-Host 'App is already installed: ' -NoNewline; Write-Host $App -ForegroundColor Blue
+            Write-Host 'App is already installed: ' -NoNewline; Write-Host ($AppName) -ForegroundColor Blue
         }
     }
     Write-Host 'Installation complete!' -ForegroundColor Green
