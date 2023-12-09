@@ -38,12 +38,12 @@ $ConfigWSLPath = "$env:USERPROFILE\.config\wsl"
 
 # ================================================================================
 # Helper functions
-function New-SymLink([String]$SourceToLink, [String]$TargetToLink) {
+function New-SymLink([String] $SourceToLink, [String] $TargetToLink) {
     New-Item -ItemType SymbolicLink -Target $SourceToLink -Path $TargetToLink
     Write-Output "Creating SymLink: $($(Split-Path -Path $SourceToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToLink).Name) -> $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
 }
 
-function New-HashThenSymLink([String]$SourceToLink, [String]$TargetToLink) {
+function New-HashThenSymLink([String] $SourceToLink, [String] $TargetToLink) {
     $HashOne = Get-FileHash -Path $SourceToLink -Algorithm SHA256
     $HashTwo = Get-FileHash -Path $TargetToLink -Algorithm SHA256
 
@@ -56,7 +56,7 @@ function New-HashThenSymLink([String]$SourceToLink, [String]$TargetToLink) {
     }
 }
 
-function Invoke-SetSymLinks([String]$SourceToLink, [String]$TargetToLink) {
+function Invoke-SetSymLinks([String] $SourceToLink, [String] $TargetToLink) {
     if ((Test-Path -Path $SourceToLink -PathType Leaf) -and (-not (Test-Path -Path $TargetToLink -PathType Leaf))) {
         New-SymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
     } elseif ((Test-Path -Path $SourceToLink -PathType Leaf) -and (Test-Path -Path $TargetToLink -PathType Leaf)) {
@@ -67,12 +67,12 @@ function Invoke-SetSymLinks([String]$SourceToLink, [String]$TargetToLink) {
 }
 
 if (-not (Test-Path -Path "$env:USERPROFILE\pr" -PathType Container)) {
-    New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
+    $null = New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
     Write-Output "Creating 'personal' folder"
 }
 
 if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
-    New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
+    $null = New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
     Write-Output "Creating 'work' folder"
 }
 
@@ -100,6 +100,7 @@ $PowerShellProfilePath = "$env:USERPROFILE\Documents\PowerShell"
 if ($ConfigPowerShellProfileFiles = Get-ChildItem -Path $ConfigPowerShellProfilePath -File -Recurse) {
     if (-not (Test-Path -Path $PowerShellProfilePath -PathType Container)) {
         New-Item -Path $PowerShellProfilePath -ItemType Directory
+
         foreach ($File in $ConfigPowerShellProfileFiles) {
             Invoke-SetSymLinks -SourceToLink "$ConfigPowerShellProfilePath\$($File.Name)" -TargetToLink "$PowerShellProfilePath\$($File.Name)"
         }
@@ -115,7 +116,6 @@ if ($ConfigPowerShellProfileFiles = Get-ChildItem -Path $ConfigPowerShellProfile
 # Set PowerShell scripts
 $PowerShellScriptsPath = "$env:USERPROFILE\Documents\PowerShell\Scripts"
 if ($ConfigScriptFiles = Get-ChildItem -Path $ConfigScriptsPath -File -Recurse) {
-
     if (-not (Test-Path -Path $PowerShellScriptsPath -PathType Container)) {
         New-Item -Path $PowerShellScriptsPath -ItemType Directory
 
@@ -134,13 +134,12 @@ if ($ConfigScriptFiles = Get-ChildItem -Path $ConfigScriptsPath -File -Recurse) 
 # Set Windows Terminal config
 $WindowsTerminalPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath -File -Recurse) {
-
     if (-not (Test-Path -Path $WindowsTerminalPath -PathType Container)) {
         New-Item -Path $WindowsTerminalPath -ItemType Directory
-
         foreach ($File in $ConfigWindowsTerminalFiles) {
             $SourceToCopy = "$ConfigWindowsTerminalPath\$($File.Name)"
             $TargetToCopy = "$WindowsTerminalPath\settings.json"
+
             if ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (-not (Test-Path -Path $TargetToCopy -PathType Leaf))) {
                 Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
                 Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
@@ -159,13 +158,12 @@ if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath
             } elseif (-not (Test-Path -Path $SourceToCopy -PathType Leaf)) {
                 Write-Error "SourceToCopy doesn't exist in dotfiles"
             }
-
-            # Invoke-SetSymLinks -SourceToLink "$ConfigWindowsTerminalPath\$($File.Name)" -TargetToLink "$WindowsTerminalPath\settings.json"
         }
     } else {
         foreach ($File in $ConfigWindowsTerminalFiles) {
             $SourceToCopy = "$ConfigWindowsTerminalPath\$($File.Name)"
             $TargetToCopy = "$WindowsTerminalPath\settings.json"
+
             if ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (-not (Test-Path -Path $TargetToCopy -PathType Leaf))) {
                 Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
                 Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
@@ -184,8 +182,6 @@ if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath
             } elseif (-not (Test-Path -Path $SourceToCopy -PathType Leaf)) {
                 Write-Error "SourceToCopy doesn't exist in dotfiles"
             }
-
-            # Invoke-SetSymLinks -SourceToLink "$ConfigWindowsTerminalPath\$($File.Name)" -TargetToLink "$WindowsTerminalPath\settings.json"
         }
     }
 } else {
@@ -195,10 +191,8 @@ if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath
 # Set Winget config
 $WingetPath = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe\LocalState"
 if ($ConfigWingetFiles = Get-ChildItem -Path $ConfigWingetPath -File -Recurse) {
-
     if (-not (Test-Path -Path $WingetPath -PathType Container)) {
         New-Item -Path $WingetPath -ItemType Directory
-
         foreach ($File in $ConfigWingetFiles) {
             Invoke-SetSymLinks -SourceToLink "$ConfigWingetPath\$($File.Name)" -TargetToLink "$WingetPath\settings.json"
             Invoke-SetSymLinks -SourceToLink "$ConfigWingetPath\$($File.Name)" -TargetToLink "$WingetPath\settings.json.backup"
@@ -215,9 +209,7 @@ if ($ConfigWingetFiles = Get-ChildItem -Path $ConfigWingetPath -File -Recurse) {
 
 # Set WSL config
 if ($ConfigWSLFiles = Get-ChildItem -Path $ConfigWSLPath -File -Recurse) {
-
     if (-not (Test-Path -Path "$env:USERPROFILE\.wslconfig" -PathType Leaf)) {
-
         foreach ($File in $ConfigWSLFiles) {
             Invoke-SetSymLinks -SourceToLink "$ConfigWSLPath\$($File.Name)" -TargetToLink "$env:USERPROFILE\.wslconfig"
         }

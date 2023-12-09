@@ -67,14 +67,14 @@
                 "source": "winget"
             },
             {
-                "id": "File-New-Project.EarTrumpet",
-                "name": "9NBLGGH516XP",
-                "source": "msstore"
+                "id": "9NBLGGH516XP",
+                "name": "File-New-Project.EarTrumpet",
+                "source": "winget"
             },
             {
-                "id": "xanderfrangos.twinkletray",
-                "name": "9PLJWWSV01LK",
-                "source": "msstore"
+                "id": "9PLJWWSV01LK",
+                "name": "xanderfrangos.twinkletray",
+                "source": "winget"
             },
             {
                 "name": "Notepad++.Notepad++",
@@ -93,15 +93,12 @@
                 "source": "winget"
             },
             {
-                "id": "Microsoft.PowerToys",
-                "name": "XP89DCGQ3K6VLD",
-                "source": "msstore"
-            },
-            {
-                "name": "Git.Git",
+                "id": "XP89DCGQ3K6VLD",
+                "name": "Microsoft.PowerToys",
                 "source": "winget"
             },
             {
+                "id": "9N0DX20HK701",
                 "name": "Microsoft.WindowsTerminal",
                 "source": "winget"
             },
@@ -115,6 +112,10 @@
             },
             {
                 "name": "ajeetdsouza.zoxide",
+                "source": "winget"
+            },
+            {
+                "name": "Git.Git",
                 "source": "winget"
             },
             {

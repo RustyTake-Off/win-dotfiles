@@ -85,6 +85,7 @@ param (
 $WinUpPath = Join-Path -Path "$env:USERPROFILE\Desktop" -ChildPath 'winup'
 $ConfigPath = "$env:USERPROFILE\.config"
 $RepositoryConfigUrl = 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config'
+
 if (Test-Path -Path "$ConfigPath\config.json") {
     $WinUpConfig = Get-Content -Path "$ConfigPath\config.json" | ConvertFrom-Json
 } else {
@@ -100,19 +101,6 @@ if (Test-Path -Path "$ConfigPath\config.json") {
 # ================================================================================
 # Helper variables
 $UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
-
-# ================================================================================
-# Misc
-
-if (-not (Test-Path -Path "$env:USERPROFILE\pr" -PathType Container)) {
-    New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
-    Write-Output "Creating 'personal' folder"
-}
-
-if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
-    New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
-    Write-Output "Creating 'work' folder"
-}
 
 # ================================================================================
 # Helper functions
@@ -335,17 +323,10 @@ function Get-PSModules {
 
     Write-Host 'Installing Powershell modules...' -ForegroundColor Green
     foreach ($Module in $WinUpConfig.psmodules) {
-        if (-not (Get-Module -ListAvailable | Where-Object { $_.Name -like $Module })) {
-            Write-Host 'Removing old version of ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
-            Remove-Module -Name $Module -Force
-            Write-Host 'Installing ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
-            Install-Module -Name $Module -Repository PSGallery -AcceptLicense
-        } else {
-            Write-Host 'Removing old version of ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
-            Remove-Module -Name $Module -Force
-            Write-Host 'Installing ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
-            Install-Module -Name $Module -Repository PSGallery -AcceptLicense
-        }
+        Write-Host 'Removing old version of ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
+        Remove-Module -Name $Module -Force
+        Write-Host 'Installing ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
+        Install-Module -Name $Module -Repository PSGallery -AcceptLicense
     }
     Write-Host 'Installation complete!' -ForegroundColor Green
 }
