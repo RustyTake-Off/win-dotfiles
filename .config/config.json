@@ -115,6 +115,10 @@
                 "source": "winget"
             },
             {
+                "name": "junegunn.fzf",
+                "source": "winget"
+            },
+            {
                 "name": "Git.Git",
                 "source": "winget"
             },
