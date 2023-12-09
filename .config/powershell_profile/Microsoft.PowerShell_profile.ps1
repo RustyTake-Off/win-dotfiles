@@ -50,7 +50,7 @@ function dot {
     git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE $Args
 }
 function wup {
-    Invoke-Expression "$env:USERPROFILE\.config\scripts\Use-WinUp.ps1"
+    Invoke-Expression "$env:USERPROFILE\.config\scripts\Use-WinUp.ps1 $Args"
 }
 
 # Check file hashes
