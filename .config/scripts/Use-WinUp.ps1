@@ -303,6 +303,12 @@ function Get-Apps {
         [String] $Type
     )
 
+    if (Get-Command winget) {
+        $null = winget list --accept-source-agreements
+    } else {
+        Write-Error -Message 'Winget is not installed'
+        Exit
+    }
     Write-Host 'Installing applications...' -ForegroundColor Green
     foreach ($App in $WinUpConfig.apps.$Type) {
         if (-not (winget list --exact --id $App.name | Select-String -SimpleMatch $App.name)) {
