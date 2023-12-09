@@ -14,6 +14,12 @@ Open terminal as admin and first run this 🗽 command to be temporarily bypasse
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 ```
 
+If that is not a concerns run bellow command, it will require that all scripts and configuration files downloaded from the Internet be signed by a trusted publisher.
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+```
+
 Use the command bellow to 🚀 quickly setup 🔵 dotfiles:
 
 ```powershell
@@ -108,6 +114,12 @@ You might want to not change the `Execution Policy` permanently 🧊 so to chang
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+```
+
+If that is not a concerns run bellow command, it will require that all scripts and configuration files downloaded from the Internet be signed by a trusted publisher.
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 ```
 
 Since it is a setup script you won't ❌ have `git` installed so to download this script run the bellow 👇 command which will get the script and save it on the desktop.

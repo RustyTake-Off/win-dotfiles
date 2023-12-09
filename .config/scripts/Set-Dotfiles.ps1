@@ -136,6 +136,7 @@ $WindowsTerminalPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8we
 if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath -File -Recurse) {
     if (-not (Test-Path -Path $WindowsTerminalPath -PathType Container)) {
         New-Item -Path $WindowsTerminalPath -ItemType Directory
+
         foreach ($File in $ConfigWindowsTerminalFiles) {
             $SourceToCopy = "$ConfigWindowsTerminalPath\$($File.Name)"
             $TargetToCopy = "$WindowsTerminalPath\settings.json"
@@ -193,6 +194,7 @@ $WingetPath = "$env:LOCALAPPDATA\Packages\Microsoft.DesktopAppInstaller_8wekyb3d
 if ($ConfigWingetFiles = Get-ChildItem -Path $ConfigWingetPath -File -Recurse) {
     if (-not (Test-Path -Path $WingetPath -PathType Container)) {
         New-Item -Path $WingetPath -ItemType Directory
+
         foreach ($File in $ConfigWingetFiles) {
             Invoke-SetSymLinks -SourceToLink "$ConfigWingetPath\$($File.Name)" -TargetToLink "$WingetPath\settings.json"
             Invoke-SetSymLinks -SourceToLink "$ConfigWingetPath\$($File.Name)" -TargetToLink "$WingetPath\settings.json.backup"

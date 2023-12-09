@@ -12,11 +12,11 @@ function Edit-Profile {
 }
 
 function Reset-Profile {
-    . (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.PowerShell_profile.ps1')
+    Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.PowerShell_profile.ps1')
 }
 
 function Reset-VSCProfile {
-    . (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.VSCode_profile.ps1')
+    Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.VSCode_profile.ps1')
 }
 
 # Init Starship
@@ -48,6 +48,9 @@ function cls { Clear-Host }
 # Dotfiles
 function dot {
     git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE $Args
+}
+function wup {
+    Invoke-Expression "$env:USERPROFILE\.config\scripts\Use-WinUp.ps1"
 }
 
 # Check file hashes

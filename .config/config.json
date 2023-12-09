@@ -100,7 +100,8 @@
             {
                 "id": "9N0DX20HK701",
                 "name": "Microsoft.WindowsTerminal",
-                "source": "winget"
+                "source": "winget",
+                "args": "--skip-dependencies"
             },
             {
                 "name": "Starship.Starship",
@@ -120,7 +121,8 @@
             },
             {
                 "name": "Git.Git",
-                "source": "winget"
+                "source": "winget",
+                "args": "--interactive"
             },
             {
                 "name": "Microsoft.VisualStudioCode",
