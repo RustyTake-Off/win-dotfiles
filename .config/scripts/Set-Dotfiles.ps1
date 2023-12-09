@@ -28,12 +28,16 @@ Repository      -   "https://github.com/RustyTake-Off/win-dotfiles",
 Script file     -   "https://github.com/RustyTake-Off/win-dotfiles/blob/main/.config/scripts/Set-Dotfiles.ps1"
 #>
 
+# ================================================================================
+# Main variables
 $ConfigPowerShellProfilePath = "$env:USERPROFILE\.config\powershell_profile"
 $ConfigScriptsPath = "$env:USERPROFILE\.config\scripts"
 $ConfigWindowsTerminalPath = "$env:USERPROFILE\.config\windows_terminal"
 $ConfigWingetPath = "$env:USERPROFILE\.config\winget"
 $ConfigWSLPath = "$env:USERPROFILE\.config\wsl"
 
+# ================================================================================
+# Helper functions
 function New-SymLink([String]$SourceToLink, [String]$TargetToLink) {
     New-Item -ItemType SymbolicLink -Target $SourceToLink -Path $TargetToLink
     Write-Output "Creating SymLink: $($(Split-Path -Path $SourceToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToLink).Name) -> $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
@@ -64,13 +68,16 @@ function Invoke-SetSymLinks([String]$SourceToLink, [String]$TargetToLink) {
 
 if (-not (Test-Path -Path "$env:USERPROFILE\pr" -PathType Container)) {
     New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
-    Write-Output "Creating 'work' folder"
+    Write-Output "Creating 'personal' folder"
 }
 
 if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
     New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
-    Write-Output "Creating 'personal' folder"
+    Write-Output "Creating 'work' folder"
 }
+
+# ================================================================================
+# Main code
 
 # Set dotfiles
 if (-not (Test-Path -Path "$env:USERPROFILE\.dotfiles" -PathType Container)) {

@@ -25,9 +25,6 @@ Invoke-Expression (&starship init powershell)
 # Init Zoxide
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
 
-# Imports
-Import-Module TerminalIcons
-
 # Aliases
 Set-Alias -Name 'g' -Value 'git'
 Set-Alias -Name 'sudo' -Value 'admin'
@@ -75,25 +72,6 @@ function touch ([String]$File) {
 function which {
     Get-Command -Name $Args | Select-Object -ExpandProperty Path
 }
-# function grep {
-#     param (
-#         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-#         [String[]] $FileName,
-#         [Parameter(Position = 1, Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
-#         [String] $Pattern
-#     )
-#     process {
-#         Write-Output "`nSearching for pattern - $Pattern - in file(s) $FileName"
-#         foreach ($File in $FileName) {
-#             Get-Content -Path $File | Select-String -Pattern $Pattern | ForEach-Object {
-#                 $_ | Select-Object `
-#                 @{Name = 'Path'; Expression = { $File } },
-#                 @{Name = 'LineNumber'; Expression = { $_.LineNumber.ToString() } },
-#                 Line
-#             } | Format-Table -AutoSize
-#         }
-#     }
-# }
 
 # Get public IP
 function pubip4 { (Invoke-WebRequest -Uri 'https://api.ipify.org/').Content }

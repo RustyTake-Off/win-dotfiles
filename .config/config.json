@@ -67,13 +67,13 @@
                 "source": "winget"
             },
             {
-                "name": "File-New-Project.EarTrumpet",
-                "id": "9NBLGGH516XP",
+                "id": "File-New-Project.EarTrumpet",
+                "name": "9NBLGGH516XP",
                 "source": "msstore"
             },
             {
-                "name": "xanderfrangos.twinkletray",
-                "id": "9PLJWWSV01LK",
+                "id": "xanderfrangos.twinkletray",
+                "name": "9PLJWWSV01LK",
                 "source": "msstore"
             },
             {
@@ -93,8 +93,8 @@
                 "source": "winget"
             },
             {
-                "name": "Microsoft.PowerToys",
-                "id": "XP89DCGQ3K6VLD",
+                "id": "Microsoft.PowerToys",
+                "name": "XP89DCGQ3K6VLD",
                 "source": "msstore"
             },
             {
@@ -124,7 +124,6 @@
         ]
     },
     "psmodules": [
-        "PSReadLine",
-        "TerminalIcons"
+        "PSReadLine"
     ]
 }
