@@ -26,98 +26,119 @@
         "base": [
             {
                 "name": "Microsoft.VCRedist.2005.x64",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Microsoft.VCRedist.2008.x64",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Microsoft.VCRedist.2010.x64",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Microsoft.VCRedist.2012.x64",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Microsoft.VCRedist.2013.x64",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Microsoft.VCRedist.2015+.x64",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Microsoft.PowerShell",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             }
         ],
         "util": [
             {
                 "name": "7zip.7zip",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Brave.Brave",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Mozilla.Firefox",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "id": "9NBLGGH516XP",
                 "name": "File-New-Project.EarTrumpet",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "id": "9PLJWWSV01LK",
                 "name": "xanderfrangos.twinkletray",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Notepad++.Notepad++",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "SumatraPDF.SumatraPDF",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "ShareX.ShareX",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "KeePassXCTeam.KeePassXC",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "id": "XP89DCGQ3K6VLD",
                 "name": "Microsoft.PowerToys",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "id": "9N0DX20HK701",
                 "name": "Microsoft.WindowsTerminal",
                 "source": "winget",
-                "args": "--skip-dependencies"
+                "args": "--silent --skip-dependencies"
             },
             {
                 "name": "Starship.Starship",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "BurntSushi.ripgrep.MSVC",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "ajeetdsouza.zoxide",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "junegunn.fzf",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             },
             {
                 "name": "Git.Git",
@@ -126,11 +147,13 @@
             },
             {
                 "name": "Microsoft.VisualStudioCode",
-                "source": "winget"
+                "source": "winget",
+                "args": "--silent"
             }
         ]
     },
     "psmodules": [
+        "PowerShellGet",
         "PSReadLine"
     ]
 }

@@ -307,7 +307,7 @@ function Get-Apps {
     foreach ($App in $WinUpConfig.apps.$Type) {
         if (-not (winget list --exact --id $App.name | Select-String -SimpleMatch $App.name)) {
             Write-Host 'Installing ' -NoNewline; Write-Host "$($App.name)..." -ForegroundColor Blue
-            Start-Process winget -ArgumentList "install --exact --id $($App.name) --source $($App.source) $($App.args) --silent --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
+            Start-Process winget -ArgumentList "install --exact --id $($App.name) --source $($App.source) $($App.args) --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
         } else {
             Write-Host 'App is already installed: ' -NoNewline; Write-Host ($App.name) -ForegroundColor Blue
         }
