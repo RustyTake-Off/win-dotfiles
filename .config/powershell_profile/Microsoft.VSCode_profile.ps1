@@ -6,4 +6,4 @@
 # └─╜ └──╜  └──╜  └───────╜
 # PowerShell VSCode profile config.
 
-. (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.PowerShell_profile.ps1')
+Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.PowerShell_profile.ps1')
