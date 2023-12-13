@@ -13,13 +13,15 @@
 Script for setting up Windows dotfiles.
 
 .DESCRIPTION
-This script makes it easier to set up dotfiles on a Windows system. It creates symbolic links and copies necessary configuration files to configure PowerShell profiles, scripts, Windows Terminal, Winget, and WSL configs.
+This script makes it easier to set up dotfiles on a Windows system. It creates symbolic links and copies necessary configuration files to configure PowerShell profiles, scripts, Windows Terminal, Winget, and WSL config.
 
 .NOTES
 You might want to not change the Execution Policy permanently so to change it only for the current process
 run the bellow command and then run the script.
-
 PS> Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+
+To change Execution Policy permanently run bellow command which only allows trusted publishers.
+PS> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 This script also needs to be run from elevated terminal as admin.
 
@@ -28,8 +30,11 @@ Repository      -   "https://github.com/RustyTake-Off/win-dotfiles",
 Script file     -   "https://github.com/RustyTake-Off/win-dotfiles/blob/main/.config/scripts/Set-Dotfiles.ps1"
 #>
 
+[CmdletBinding(SupportsShouldProcess)]
+
 # ================================================================================
 # Main variables
+
 $ConfigPowerShellProfilePath = "$env:USERPROFILE\.config\powershell_profile"
 $ConfigScriptsPath = "$env:USERPROFILE\.config\scripts"
 $ConfigWindowsTerminalPath = "$env:USERPROFILE\.config\windows_terminal"
@@ -38,61 +43,96 @@ $ConfigWSLPath = "$env:USERPROFILE\.config\wsl"
 
 # ================================================================================
 # Helper functions
-function New-SymLink([String] $SourceToLink, [String] $TargetToLink) {
-    New-Item -ItemType SymbolicLink -Target $SourceToLink -Path $TargetToLink
-    Write-Output "Creating SymLink: $($(Split-Path -Path $SourceToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToLink).Name) -> $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
-}
 
-function New-HashThenSymLink([String] $SourceToLink, [String] $TargetToLink) {
-    $HashOne = Get-FileHash -Path $SourceToLink -Algorithm SHA256
-    $HashTwo = Get-FileHash -Path $TargetToLink -Algorithm SHA256
+function New-SymLink {
+    param(
+        [String] $SourceToLink,
 
-    if ($HashOne.Hash -ne $HashTwo.Hash) {
-        Remove-Item -Path $TargetToLink -Force
-        Write-Output "Removing $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
-        New-SymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
-    } else {
-        Write-Output "SymLink already set: $($(Split-Path -Path $SourceToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToLink).Name) -> $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
+        [String] $TargetToLink
+    )
+
+    try {
+        New-Item -ItemType SymbolicLink -Target $SourceToLink -Path $TargetToLink
+        Write-Output "Creating SymLink: $($(Split-Path -Path $SourceToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToLink).Name) -> $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
+    } catch {
+        Write-Error "Error creating new SymbolicLink: $_"
+        Write-Error "Line: $($_.ScriptStackTrace)"
     }
 }
 
-function Invoke-SetSymLinks([String] $SourceToLink, [String] $TargetToLink) {
-    if ((Test-Path -Path $SourceToLink -PathType Leaf) -and (-not (Test-Path -Path $TargetToLink -PathType Leaf))) {
-        New-SymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
-    } elseif ((Test-Path -Path $SourceToLink -PathType Leaf) -and (Test-Path -Path $TargetToLink -PathType Leaf)) {
-        New-HashThenSymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
-    } elseif ((-not (Test-Path -Path $SourceToLink -PathType Leaf)) -and (Test-Path -Path $TargetToLink -PathType Leaf)) {
-        Write-Error "Cannot create SymLink SourceToLink doesn't exist in dotfiles"
+function New-HashThenSymLink {
+    param(
+        [String] $SourceToLink,
+
+        [String] $TargetToLink
+    )
+
+    try {
+        $HashOne = Get-FileHash -Path $SourceToLink -Algorithm SHA256
+        $HashTwo = Get-FileHash -Path $TargetToLink -Algorithm SHA256
+    } catch {
+        Write-Error "Error calculating file hashes: $_"
+        Write-Error "Line: $($_.ScriptStackTrace)"
+    }
+
+    try {
+        if ($HashOne.Hash -ne $HashTwo.Hash) {
+            Remove-Item -Path $TargetToLink -Force
+            Write-Output "Removing $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
+            New-SymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
+        } else {
+            Write-Output "SymLink already set: $($(Split-Path -Path $SourceToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToLink).Name) -> $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
+        }
+    } catch {
+        Write-Error "Error creating new SymbolicLink: $_"
+        Write-Error "Line: $($_.ScriptStackTrace)"
     }
 }
 
-if (-not (Test-Path -Path "$env:USERPROFILE\pr" -PathType Container)) {
-    $null = New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
-    Write-Output "Creating 'personal' folder"
-}
+function Invoke-SetSymLinks {
+    param(
+        [String] $SourceToLink,
 
-if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
-    $null = New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
-    Write-Output "Creating 'work' folder"
+        [String] $TargetToLink
+    )
+
+    try {
+        if ((Test-Path -Path $SourceToLink -PathType Leaf) -and (-not (Test-Path -Path $TargetToLink -PathType Leaf))) {
+            New-SymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
+        } elseif ((Test-Path -Path $SourceToLink -PathType Leaf) -and (Test-Path -Path $TargetToLink -PathType Leaf)) {
+            New-HashThenSymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
+        } elseif ((-not (Test-Path -Path $SourceToLink -PathType Leaf)) -and (Test-Path -Path $TargetToLink -PathType Leaf)) {
+            Write-Error "Cannot create SymLink, SourceToLink doesn't exist in dotfiles"
+        }
+    } catch {
+        Write-Error "Error creating new SymbolicLink: $_"
+        Write-Error "Line: $($_.ScriptStackTrace)"
+    }
 }
 
 # ================================================================================
 # Main code
 
 # Set dotfiles
-if (-not (Test-Path -Path "$env:USERPROFILE\.dotfiles" -PathType Container)) {
-    if (Get-Command git) {
-        git clone --bare 'https://github.com/RustyTake-Off/win-dotfiles.git' "$env:USERPROFILE\.dotfiles"
-        git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE checkout
-        git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE config status.showUntrackedFiles no
+try {
+    if (-not (Test-Path -Path "$env:USERPROFILE\.dotfiles" -PathType Container)) {
+        if (Get-Command git) {
+            git clone --bare 'https://github.com/RustyTake-Off/win-dotfiles.git' "$env:USERPROFILE\.dotfiles"
+            git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE checkout
+            git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE config status.showUntrackedFiles no
+        } else {
+            Write-Error 'Git is not installed'
+            Exit
+        }
     } else {
-        Write-Error 'Git is not installed'
-        Exit
+        Write-Output 'Dotfiles are set. Checking for updates'
+        git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE reset --hard
+        git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE pull
     }
-} else {
-    Write-Output 'Dotfiles are set. Checking for updates'
-    git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE reset --hard
-    git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE pull
+} catch {
+    Write-Error "Error setting up dotfiles: $_"
+    Write-Error "Line: $($_.ScriptStackTrace)"
+    Exit
 }
 
 # Set PowerShell profiles
@@ -222,4 +262,17 @@ if ($ConfigWSLFiles = Get-ChildItem -Path $ConfigWSLPath -File -Recurse) {
     }
 } else {
     Write-Output 'WSL config is missing from dotfiles'
+}
+
+# ================================================================================
+# Miscellaneous code
+
+if (-not (Test-Path -Path "$env:USERPROFILE\pr" -PathType Container)) {
+    $null = New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
+    Write-Output "Creating 'personal' folder"
+}
+
+if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
+    $null = New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
+    Write-Output "Creating 'work' folder"
 }
