@@ -50,8 +50,7 @@
                 "face": "RobotoMono Nerd Font Mono",
                 "size": 14.0
             },
-            "opacity": 95,
-            "useAcrylic": true
+            "opacity": 95
         },
         "list": [
             {
@@ -398,5 +397,6 @@
             "yellow": "#808000"
         }
     ],
-    "themes": []
+    "themes": [],
+    "useAcrylicInTabRow": true
 }
