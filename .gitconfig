@@ -1,5 +1,32 @@
+[core]
+    excludesfile = ~/.gitignore
+    untrackedCache = true
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    added = yellow
+    changed = green
+    untracked = cyan
+    branch = magenta
+
+[merge]
+    log = true
+
 [includeIf "gitdir:~/pr/"]
     path = ~/pr/.gitconfig
 
 [includeIf "gitdir:~/wk/"]
     path = ~/wk/.gitconfig
+
+[alias]
+    s = status --short
