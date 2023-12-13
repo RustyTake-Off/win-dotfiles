@@ -14,13 +14,15 @@ Script for setting up Windows.
 
 .DESCRIPTION
 This script makes the configuration of a Windows environment easier and more convenient by downloading drivers,
-installing fonts applications, and PowerShell modules.
+installing fonts, applications, and PowerShell modules.
 
 .NOTES
 You might want to not change the Execution Policy permanently so to change it only for the current process
 run the bellow command and then run the script.
-
 PS> Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+
+To change Execution Policy permanently run bellow command which only allows trusted publishers.
+PS> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 This script also needs to be run from elevated terminal as admin.
 
@@ -82,7 +84,8 @@ param (
 
 # ================================================================================
 # Main variables
-$WinUpPath = Join-Path -Path "$env:USERPROFILE\Desktop" -ChildPath 'winup'
+
+$WinUpPath = "$env:USERPROFILE\Desktop\winup"
 $ConfigPath = "$env:USERPROFILE\.config"
 $RepositoryConfigUrl = 'https://raw.githubusercontent.com/RustyTake-Off/win-dotfiles/main/.config'
 
@@ -92,18 +95,20 @@ if (Test-Path -Path "$ConfigPath\config.json") {
     try {
         $WinUpConfig = Invoke-RestMethod -Uri "$RepositoryConfigUrl/config.json"
     } catch {
-        Write-Error $_.Exception.Message
-        Write-Error $_.ScriptStackTrace
+        Write-Error "Error fetching config setup file: $_"
+        Write-Error "Line: $($_.ScriptStackTrace)"
         Exit
     }
 }
 
 # ================================================================================
 # Helper variables
+
 $UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
 
 # ================================================================================
 # Helper functions
+
 function Set-Directory {
     <#
     .DESCRIPTION
@@ -121,8 +126,7 @@ function Set-Directory {
             New-Item -Path $DirectoryPath -ItemType Directory -ErrorAction SilentlyContinue > $null
         } catch {
             Write-Error "Failed to create $DirectoryPath"
-            Write-Error $_.Exception.Message
-            Write-Error $_.ScriptStackTrace
+            Write-Error "Line: $($_.ScriptStackTrace)"
         }
     }
 }
@@ -150,8 +154,7 @@ function Invoke-Download {
             Invoke-WebRequest -Uri $Url -UserAgent $UserAgent -OutFile $DownloadPath -ErrorAction SilentlyContinue
         } catch {
             Write-Error "Failed to download $FileName"
-            Write-Error $_.Exception.Message
-            Write-Error $_.ScriptStackTrace
+            Write-Error "Line: $($_.ScriptStackTrace)"
         }
     }
 }
@@ -209,14 +212,14 @@ function Install-Fonts {
             }
         } catch {
             Write-Error "Error installing $FontName"
-            Write-Error $_.Exception.Message
-            Write-Error $_.ScriptStackTrace
+            Write-Error "Line: $($_.ScriptStackTrace)"
         }
     }
 }
 
 # ================================================================================
 # Main functions
+
 function Invoke-GetDrivers {
     <#
     .DESCRIPTION
@@ -285,8 +288,7 @@ function Invoke-CTT {
         Invoke-WebRequest 'https://christitus.com/win' -UseBasicParsing | Invoke-Expression
     } catch {
         Write-Error 'Failed to invoke CTT - winutil'
-        Write-Error $_.Exception.Message
-        Write-Error $_.ScriptStackTrace
+        Write-Error "Line: $($_.ScriptStackTrace)"
     }
     Write-Host 'Invoke complete!' -ForegroundColor Green
 }
@@ -355,8 +357,7 @@ function Invoke-DotfilesScript {
         }
     } catch {
         Write-Error 'Failed to invoke Dotfiles setup script'
-        Write-Error $_.Exception.Message
-        Write-Error $_.ScriptStackTrace
+        Write-Error "Line: $($_.ScriptStackTrace)"
     }
     Write-Host 'Invoke complete!' -ForegroundColor Green
 }
@@ -378,8 +379,7 @@ function Install-WSL {
         wsl --install --distribution $Distribution
     } catch {
         Write-Error 'Failed to invoke Dotfiles setup script'
-        Write-Error $_.Exception.Message
-        Write-Error $_.ScriptStackTrace
+        Write-Error "Line: $($_.ScriptStackTrace)"
     }
     Write-Host 'Invoke complete!' -ForegroundColor Green
 }
