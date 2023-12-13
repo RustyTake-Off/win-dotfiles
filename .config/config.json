@@ -153,7 +153,11 @@
         ]
     },
     "psmodules": [
+        "PackageManagement",
         "PowerShellGet",
-        "PSReadLine"
+        "PSReadLine",
+        "posh-git",
+        "Pester",
+        "Az"
     ]
 }
