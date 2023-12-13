@@ -10,11 +10,9 @@
 function Edit-Profile {
     code (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.PowerShell_profile.ps1')
 }
-
 function Reset-Profile {
     Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.PowerShell_profile.ps1')
 }
-
 function Reset-VSCProfile {
     Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.VSCode_profile.ps1')
 }
@@ -24,6 +22,13 @@ Invoke-Expression (&starship init powershell)
 
 # Init Zoxide
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
+
+# Setup posh-git for tab completion
+if (-not (Get-Module -Name posh-git)) {
+    Import-Module -Name posh-git
+    $GitPromptSettings.EnablePromptStatus = $false
+    $GitPromptSettings.EnableFileStatus = $false
+}
 
 # Aliases
 Set-Alias -Name 'g' -Value 'git'
@@ -43,6 +48,7 @@ function cd.... { Set-Location ..\..\..\.. }
 function cd..... { Set-Location ..\..\..\..\.. }
 function cd...... { Set-Location ..\..\..\..\..\.. }
 function ll { Get-ChildItem }
+function la { Get-ChildItem }
 function cls { Clear-Host }
 
 # Dotfiles
@@ -69,7 +75,7 @@ function admin {
         $Args"
     }
 }
-function touch ([String]$File) {
+function touch ([String] $FileName) {
     Write-Output '' | Out-File -FilePath $File -Encoding ASCII
 }
 function which {
@@ -89,8 +95,7 @@ if (($Host.Name -eq 'ConsoleHost') -and ($PSVersionTable.PSVersion -ge $psMinimu
 } else {
     Set-PSReadLineOption -PredictionSource History
 }
-
-# Set-PSReadLineOption -EditMode Windows
+Set-PSReadLineOption -HistoryNoDuplicates:$true
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd:$true
 Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -Colors @{ InlinePrediction = 'Blue' }
