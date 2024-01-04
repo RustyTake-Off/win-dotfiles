@@ -5,13 +5,22 @@
 # │ ║ │ ╚╗  │  ║  │  ╚═╛  ║
 # └─╜ └──╜  └──╜  └───────╜
 # Starship config.
+# Unicode characters: https://unicodes.jessetane.com
 
 "$schema" = 'https://starship.rs/config-schema.json'
 
-format = '$os$username$hostname$kubernetes$directory$python$nodejs$git_branch$git_status'
+# Set prompt format
+format = '$os$username@$hostname$directory$python$nodejs$golang$rust$kubernetes$terraform$azure$aws$gcloud$git_branch$git_status'
 
 add_newline = false
-command_timeout = 1000
+
+# Change some of the colors
+palette = 'custom'
+[palettes.custom]
+blue = '#4285f4'
+orange = '#ffa700'
+pink = '#ff71ce'
+purple = '#8b00fd'
 
 [character]
 success_symbol = ''
@@ -19,7 +28,7 @@ error_symbol = ''
 
 [os]
 format = '[$symbol]($style) '
-style = 'bold white'
+style = 'white bold'
 disabled = false
 
 [os.symbols]
@@ -29,14 +38,14 @@ Macos = '󰀵'
 
 [username]
 format = '[$user]($style)'
-style_user = 'blue bold'
+style_user = 'orange bold'
 style_root = 'red bold'
 show_always = true
 disabled = false
 
 [hostname]
-format = '@[$hostname]($style) '
-style = 'bold yellow'
+format = '[$hostname]($style) '
+style = 'yellow bold'
 ssh_only = false
 disabled = false
 
@@ -46,40 +55,83 @@ truncation_length = 1
 truncation_symbol = '…/'
 read_only = ''
 read_only_style = 'red'
+style = 'cyan bold'
+disabled = false
 
 [git_branch]
-format = '\[ [$branch]($style) '
+format = '\[[$branch]($style) '
 truncation_symbol = '…/'
-style = 'bold green'
+style = 'green bold'
+disabled = false
 
 [git_status]
 format = '[$all_status$ahead_behind]($style)\] '
 ahead = '⇡${count} '
 behind = '⇣${count} '
-conflicted = '🏳${count} '
-deleted = '${count} '
+conflicted = '⚠${count} '
+deleted = 'X${count} '
 diverged = '⇕⇡${ahead_count}⇣${behind_count} '
-modified = '${count} '
-renamed = '襁${count} '
-staged = '[++\($count\)](green) '
-stashed = '${count} '
-untracked = '${count} '
+modified = 'M${count} '
+renamed = 'R${count} '
+staged = '⩲{$count} '
+stashed = '☖${count} '
+untracked = '?${count}'
 up_to_date = ''
-style = 'bold green'
-
-# Tools and languages
-[kubernetes]
-format = '\[[󱃾 $context\($namespace\)]($style)\] '
-style = 'bold purple'
+style = 'green bold'
 disabled = false
 
+# Tools and languages
 [python]
-format = '\[[${symbol}${pyenv_prefix}(${version})(\($virtualenv\))]($style)\]'
+format = '\[[$symbol]($style)\] '
 pyenv_version_name = true
-style = 'bold yellow'
+symbol = '🐍'
+style = 'yellow bold'
 disabled = false
 
 [nodejs]
-format = '\[[$symbol($version)]($style)\] '
-style = 'bold orange'
+format = '\[[$symbol $version]($style)\] '
+symbol = '⬢'
+style = 'orange bold'
 disabled = false
+
+[golang]
+format = '\[[($symbol $version)]($style)\] '
+symbol = '🗦𝐺𝑂'
+style = 'cyan bold'
+disabled = false
+
+[rust]
+format = '\[[$symbol $version]($style)\] '
+symbol = '🦀'
+style = 'red bold'
+disabled = false
+
+[kubernetes]
+format = '\[[$symbol $context]($style)\] '
+symbol = '☸'
+style = 'purple bold'
+disabled = false
+
+[terraform]
+format = '\[[$symbol]($style)\] '
+symbol = 'TF'
+style = 'purple bold'
+disabled = false
+
+[azure]
+format = '\[[$symbol]($style)\] '
+symbol = 'AZ'
+style = 'blue bold'
+disabled = true
+
+[aws]
+format = '\[[$symbol]($style)\] '
+symbol = 'AWS'
+style = 'red bold'
+disabled = true
+
+[gcloud]
+format = '\[[$symbol]($style)\] '
+symbol = 'GCP'
+style = 'white bold'
+disabled = true
