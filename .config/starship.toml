@@ -38,7 +38,7 @@ Macos = '󰀵'
 
 [username]
 format = '[$user]($style)'
-style_user = 'orange bold'
+style_user = 'blue bold'
 style_root = 'red bold'
 show_always = true
 disabled = false
