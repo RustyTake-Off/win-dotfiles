@@ -16,10 +16,6 @@
     ],
     "fonts": [
         "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip",
-        "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip",
-        "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraMono.zip",
-        "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/Hack.zip",
-        "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip",
         "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/RobotoMono.zip"
     ],
     "apps": {
