@@ -154,22 +154,22 @@ if ($ConfigPowerShellProfileFiles = Get-ChildItem -Path $ConfigPowerShellProfile
 }
 
 # Set PowerShell scripts
-$PowerShellScriptsPath = "$env:USERPROFILE\Documents\PowerShell\Scripts"
-if ($ConfigScriptFiles = Get-ChildItem -Path $ConfigScriptsPath -File -Recurse) {
-    if (-not (Test-Path -Path $PowerShellScriptsPath -PathType Container)) {
-        New-Item -Path $PowerShellScriptsPath -ItemType Directory
+# $PowerShellScriptsPath = "$env:USERPROFILE\Documents\PowerShell\Scripts"
+# if ($ConfigScriptFiles = Get-ChildItem -Path $ConfigScriptsPath -File -Recurse) {
+#     if (-not (Test-Path -Path $PowerShellScriptsPath -PathType Container)) {
+#         New-Item -Path $PowerShellScriptsPath -ItemType Directory
 
-        foreach ($File in $ConfigScriptFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigScriptsPath\$($File.Name)" -TargetToLink "$PowerShellScriptsPath\$($File.Name)"
-        }
-    } else {
-        foreach ($File in $ConfigScriptFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigScriptsPath\$($File.Name)" -TargetToLink "$PowerShellScriptsPath\$($File.Name)"
-        }
-    }
-} else {
-    Write-Output 'PowerShell scripts are missing from dotfiles'
-}
+#         foreach ($File in $ConfigScriptFiles) {
+#             Invoke-SetSymLinks -SourceToLink "$ConfigScriptsPath\$($File.Name)" -TargetToLink "$PowerShellScriptsPath\$($File.Name)"
+#         }
+#     } else {
+#         foreach ($File in $ConfigScriptFiles) {
+#             Invoke-SetSymLinks -SourceToLink "$ConfigScriptsPath\$($File.Name)" -TargetToLink "$PowerShellScriptsPath\$($File.Name)"
+#         }
+#     }
+# } else {
+#     Write-Output 'PowerShell scripts are missing from dotfiles'
+# }
 
 # Set Windows Terminal config
 $WindowsTerminalPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"

@@ -17,22 +17,20 @@ function Reset-VSCProfile {
     Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.VSCode_profile.ps1')
 }
 
-# Init Starship
-Invoke-Expression (&starship init powershell)
-
-# Init Zoxide
-Invoke-Expression (& { (zoxide init powershell | Out-String) })
-
-# Setup posh-git for tab completion
-if (-not (Get-Module -Name posh-git)) {
-    Import-Module -Name posh-git
-    $GitPromptSettings.EnablePromptStatus = $false
-    $GitPromptSettings.EnableFileStatus = $false
-}
-
 # Aliases
 Set-Alias -Name 'g' -Value 'git'
 Set-Alias -Name 'sudo' -Value 'admin'
+
+# Dotfiles and scripts
+function dot {
+    git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE $Args
+}
+function winup {
+    Invoke-Expression "$env:USERPROFILE\.config\scripts\Use-WinUp.ps1 $Args"
+}
+function setdot {
+    Invoke-Expression "$env:USERPROFILE\.config\scripts\Set-Dotfiles.ps1 $Args"
+}
 
 # Functions
 function hm { Set-Location $env:USERPROFILE }
@@ -50,14 +48,6 @@ function cd...... { Set-Location ..\..\..\..\..\.. }
 function ll { Get-ChildItem }
 function la { Get-ChildItem }
 function cls { Clear-Host }
-
-# Dotfiles
-function dot {
-    git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE $Args
-}
-function wup {
-    Invoke-Expression "$env:USERPROFILE\.config\scripts\Use-WinUp.ps1 $Args"
-}
 
 # Check file hashes
 function md5 { Get-FileHash -Algorithm MD5 $Args }
@@ -85,6 +75,19 @@ function which {
 # Get public IP
 function pubip4 { (Invoke-WebRequest -Uri 'https://api.ipify.org/').Content }
 function pubip6 { (Invoke-WebRequest -Uri 'https://ifconfig.me/ip').Content }
+
+# Init Starship
+Invoke-Expression (&starship init powershell)
+
+# Init Zoxide
+Invoke-Expression (& { (zoxide init powershell | Out-String) })
+
+# Setup posh-git for tab completion
+if (-not (Get-Module -Name posh-git)) {
+    Import-Module -Name posh-git
+    $GitPromptSettings.EnablePromptStatus = $false
+    $GitPromptSettings.EnableFileStatus = $false
+}
 
 # PSReadLine
 $PSMinimumVersion = [Version]'7.1.999'
