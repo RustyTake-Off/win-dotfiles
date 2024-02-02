@@ -17,44 +17,47 @@ function Reset-VSCProfile {
     Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath '\Documents\PowerShell\Microsoft.VSCode_profile.ps1')
 }
 
-# Aliases
-Set-Alias -Name 'g' -Value 'git'
-Set-Alias -Name 'sudo' -Value 'admin'
+# Movement
+function cd...... { Set-Location ..\..\..\..\..\.. }
+function cd..... { Set-Location ..\..\..\..\.. }
+function cd.... { Set-Location ..\..\..\.. }
+function cd... { Set-Location ..\..\.. }
+function cd.. { Set-Location ..\.. }
+function cd. { Set-Location .. }
+function hm { Set-Location $env:USERPROFILE }
+function hpr { Set-Location "$env:USERPROFILE/pr" }
+function hwk { Set-Location "$env:USERPROFILE/wk" }
+function dl { Set-Location "$env:USERPROFILE/Downloads" }
+function doc { Set-Location "$env:USERPROFILE/Documents" }
+function desk { Set-Location "$env:USERPROFILE/Desktop" }
 
-# Dotfiles and scripts
+# Function for opening windows explorer
+function open { explorer.exe $Args }
+
+# For working with dotfiles in $HOME and setup scripts
 function dot {
     git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE $Args
+}
+function setdots {
+    Invoke-Expression "$env:USERPROFILE\.config\scripts\Set-Dotfiles.ps1 $Args"
 }
 function winup {
     Invoke-Expression "$env:USERPROFILE\.config\scripts\Use-WinUp.ps1 $Args"
 }
-function setdot {
-    Invoke-Expression "$env:USERPROFILE\.config\scripts\Set-Dotfiles.ps1 $Args"
-}
 
-# Functions
-function hm { Set-Location $env:USERPROFILE }
-function hpr { Set-Location "$env:USERPROFILE/pr" }
-function hwk { Set-Location "$env:USERPROFILE/wk" }
-function desk { Set-Location "$env:USERPROFILE/Desktop" }
-function doc { Set-Location "$env:USERPROFILE/Documents" }
-function dl { Set-Location "$env:USERPROFILE/Downloads" }
-function cd. { Set-Location .. }
-function cd.. { Set-Location ..\.. }
-function cd... { Set-Location ..\..\.. }
-function cd.... { Set-Location ..\..\..\.. }
-function cd..... { Set-Location ..\..\..\..\.. }
-function cd...... { Set-Location ..\..\..\..\..\.. }
-function ll { Get-ChildItem }
-function la { Get-ChildItem }
+function h { Get-History }
 function cls { Clear-Host }
+
+function ls { Get-ChildItem }
+function la { Get-ChildItem }
+function ll { Get-ChildItem }
 
 # Check file hashes
 function md5 { Get-FileHash -Algorithm MD5 $Args }
 function sha1 { Get-FileHash -Algorithm SHA1 $Args }
 function sha256 { Get-FileHash -Algorithm SHA256 $Args }
 
-# Linux like functions
+# Quick admin switch
 function admin {
     if (-not $Args) {
         Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -ExecutionPolicy Bypass -Command `
@@ -65,6 +68,7 @@ function admin {
         $Args"
     }
 }
+
 function touch ([String] $FileName) {
     Write-Output '' | Out-File -FilePath $File -Encoding ASCII
 }
@@ -76,10 +80,22 @@ function which {
 function pubip4 { (Invoke-WebRequest -Uri 'https://api.ipify.org/').Content }
 function pubip6 { (Invoke-WebRequest -Uri 'https://ifconfig.me/ip').Content }
 
-# Init Starship
-Invoke-Expression (&starship init powershell)
+# Aliases
+Set-Alias -Name 'sudo' -Value 'admin'
 
-# Init Zoxide
+Set-Alias -Name 'g' -Value 'git'
+Set-Alias -Name 'gi' -Value 'git init'
+Set-Alias -Name 'gcl' -Value 'git clone'
+Set-Alias -Name 'gs' -Value 'git status --short'
+Set-Alias -Name 'ga' -Value 'git add'
+Set-Alias -Name 'gc' -Value 'git commit'
+Set-Alias -Name 'gcm' -Value 'git commit -m'
+Set-Alias -Name 'gpll' -Value 'git pull'
+Set-Alias -Name 'gpsh' -Value 'git push'
+Set-Alias -Name 'gchb' -Value 'git checkout -b'
+
+# Inits
+Invoke-Expression (&starship init powershell)
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
 
 # Setup posh-git for tab completion
