@@ -3,33 +3,31 @@
     "$schema": "https://aka.ms/terminal-profiles-schema",
     "actions": [
         {
-            "command": "closePane",
-            "keys": "ctrl+w"
-        },
-        {
-            "command": {
-                "action": "newTab"
-            },
-            "keys": "ctrl+t"
-        },
-        {
+            "keys": "ctrl+c",
             "command": {
                 "action": "copy",
                 "singleLine": false
-            },
-            "keys": "ctrl+c"
+            }
         },
         {
-            "command": "paste",
-            "keys": "ctrl+v"
+            "keys": "ctrl+v",
+            "command": "paste"
         },
         {
-            "command": {
-                "action": "splitPane",
-                "split": "auto",
-                "splitMode": "duplicate"
-            },
-            "keys": "alt+shift+p"
+            "keys": "ctrl+w",
+            "command": "closeTab"
+        },
+        {
+            "keys": "ctrl+shift+w",
+            "command": "closeTabsAfter"
+        },
+        {
+            "keys": "ctrl+t",
+            "command": "newTab"
+        },
+        {
+            "keys": "ctrl+shift+f",
+            "command": "find"
         }
     ],
     "centerOnLaunch": true,
@@ -54,7 +52,7 @@
         },
         "list": [
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\images\\ps5.1-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\ps5.1-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -64,7 +62,7 @@
                 "name": "Windows PowerShell"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\images\\msdos-120x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\msdos-120x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -74,7 +72,7 @@
                 "name": "Command Prompt"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\images\\ps7-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\ps7-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -85,7 +83,7 @@
                 "source": "Windows.Terminal.PowershellCore"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\images\\azure-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\azure-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -96,7 +94,7 @@
                 "source": "Windows.Terminal.Azure"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\images\\git-bash-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\git-bash-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -107,7 +105,7 @@
                 "source": "Git"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\images\\ubuntu-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\ubuntu-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -118,7 +116,7 @@
                 "source": "CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\images\\ubuntu-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\ubuntu-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
@@ -129,14 +127,14 @@
                 "source": "CanonicalGroupLimited.Ubuntu20.04LTS_79rhkp1fndgsc"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\images\\kali-128x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\kali-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
                 "bellStyle": "none",
                 "guid": "{46ca431a-3a87-5fb3-83cd-11ececc031d2}",
                 "hidden": false,
-                "icon": "%USERPROFILE%\\docs\\images\\kali-128x128.png",
+                "icon": "%USERPROFILE%\\docs\\media\\kali-128x128.png",
                 "name": "kali-linux",
                 "source": "Windows.Terminal.Wsl"
             }
