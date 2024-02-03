@@ -49,8 +49,8 @@ function New-CopyFile {
     )
 
     try {
-        Write-Output "Copying file: $($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
         Copy-Item -Path $SourceFile -Destination $TargetFile
+        Write-Output "Copying file: $($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
     } catch {
         Write-Error "Error copying new file: $_"
         Write-Error "Line: $($_.ScriptStackTrace)"
