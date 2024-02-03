@@ -39,10 +39,10 @@ function dot {
     git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE $Args
 }
 function setdots {
-    Invoke-Expression "$env:USERPROFILE\.config\scripts\Set-Dotfiles.ps1 $Args"
+    Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath "\.config\scripts\Set-Dotfiles.ps1 $Args")
 }
 function winup {
-    Invoke-Expression "$env:USERPROFILE\.config\scripts\Use-WinUp.ps1 $Args"
+    Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath "\.config\scripts\Use-WinUp.ps1 $Args")
 }
 
 function h { Get-History }
