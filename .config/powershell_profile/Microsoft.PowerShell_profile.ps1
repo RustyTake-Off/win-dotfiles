@@ -58,15 +58,15 @@ function sha1 { Get-FileHash -Algorithm SHA1 $Args }
 function sha256 { Get-FileHash -Algorithm SHA256 $Args }
 
 # Quick admin switch
+# For some reason passing arguments stopped working so now it only opens WT as admin
+# It also requires an additional profile in WT that always run as admin
 function admin {
-    if (-not $Args) {
-        Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -ExecutionPolicy Bypass -Command `
-        cd $(Get-Location)"
-    } else {
-        Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -ExecutionPolicy Bypass -Command `
-        cd $(Get-Location) `
-        $Args"
-    }
+    wt --profile "PowerShell (Admin)" --suppressApplicationTitle --startingDirectory "$(Get-Location)"
+    # if (-not $Args) {
+        # Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -NoLogo -ExecutionPolicy Bypass -WorkingDirectory $(Get-Location)"
+    # } else {
+        # Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -NoLogo -ExecutionPolicy Bypass -WorkingDirectory $(Get-Location) -Command $Args"
+    # }
 }
 
 function touch ([String] $FileName) {

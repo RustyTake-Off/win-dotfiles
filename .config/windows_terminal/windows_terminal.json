@@ -52,16 +52,6 @@
         },
         "list": [
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\media\\ps5.1-128x128.png",
-                "backgroundImageAlignment": "bottomRight",
-                "backgroundImageOpacity": 0.2,
-                "backgroundImageStretchMode": "none",
-                "bellStyle": "none",
-                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
-                "hidden": false,
-                "name": "Windows PowerShell"
-            },
-            {
                 "backgroundImage": "%USERPROFILE%\\docs\\media\\msdos-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
@@ -70,6 +60,16 @@
                 "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
                 "hidden": false,
                 "name": "Command Prompt"
+            },
+            {
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\ps5.1-128x128.png",
+                "backgroundImageAlignment": "bottomRight",
+                "backgroundImageOpacity": 0.2,
+                "backgroundImageStretchMode": "none",
+                "bellStyle": "none",
+                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+                "hidden": false,
+                "name": "Windows PowerShell"
             },
             {
                 "backgroundImage": "%USERPROFILE%\\docs\\media\\ps7-128x128.png",
@@ -137,6 +137,20 @@
                 "icon": "%USERPROFILE%\\docs\\media\\kali-128x128.png",
                 "name": "kali-linux",
                 "source": "Windows.Terminal.Wsl"
+            },
+            {
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\ps7-128x128.png",
+                "backgroundImageAlignment": "bottomRight",
+                "backgroundImageOpacity": 0.2,
+                "backgroundImageStretchMode": "none",
+                "bellStyle": "none",
+                "commandline": "\"%PROGRAMFILES%\\PowerShell\\7\\pwsh.exe\" -NoLogo",
+                "elevate": true,
+                "guid": "{20c58779-3708-4eba-878d-4732a8242c68}",
+                "hidden": true,
+                "icon": "ms-appx:///ProfileIcons/pwsh.png",
+                "name": "PowerShell (Admin)",
+                "startingDirectory": "%USERPROFILE%"
             }
         ]
     },
