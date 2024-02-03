@@ -49,8 +49,8 @@ function New-CopyFile {
     )
 
     try {
-        Copy-Item -Path $SourceFile -Destination $TargetFile
         Write-Output "Copying file: $($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
+        Copy-Item -Path $SourceFile -Destination $TargetFile
     } catch {
         Write-Error "Error copying new file: $_"
         Write-Error "Line: $($_.ScriptStackTrace)"
@@ -73,8 +73,8 @@ function New-HashThenCopyFile {
 
     try {
         if ($HashOne.Hash -ne $HashTwo.Hash) {
-            Remove-Item -Path $TargetFile -Force
             Write-Output "Removing $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
+            Remove-Item -Path $TargetFile -Force
             New-CopyFile -SourceFile $SourceFile -TargetFile $TargetFile
         } else {
             Write-Output "File already set: $($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
