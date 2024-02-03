@@ -99,7 +99,7 @@ Invoke-Expression (&starship init powershell)
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
 
 # Setup posh-git for tab completion
-if (-not (Get-Module -Name posh-git)) {
+if (Get-Module -Name posh-git) {
     Import-Module -Name posh-git
     $GitPromptSettings.EnablePromptStatus = $false
     $GitPromptSettings.EnableFileStatus = $false
