@@ -6,8 +6,6 @@
 # └─╜ └──╜  └──╜  └───────╜
 # Script for setting up Windows dotfiles.
 
-#Requires -RunAsAdministrator
-
 <#
 .SYNOPSIS
 Script for setting up Windows dotfiles.
@@ -44,68 +42,65 @@ $ConfigWSLPath = "$env:USERPROFILE\.config\wsl"
 # ================================================================================
 # Helper functions
 
-function New-SymLink {
+function New-CopyFile {
     param(
-        [String] $SourceToLink,
-
-        [String] $TargetToLink
+        [String] $SourceFile,
+        [String] $TargetFile
     )
 
     try {
-        New-Item -ItemType SymbolicLink -Target $SourceToLink -Path $TargetToLink
-        Write-Output "Creating SymLink: $($(Split-Path -Path $SourceToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToLink).Name) -> $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
+        Copy-Item -Path $SourceFile -Destination $TargetFile
+        Write-Output "Copying file: $($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
     } catch {
-        Write-Error "Error creating new SymbolicLink: $_"
+        Write-Error "Error copying new file: $_"
         Write-Error "Line: $($_.ScriptStackTrace)"
     }
 }
 
-function New-HashThenSymLink {
+function New-HashThenCopyFile {
     param(
-        [String] $SourceToLink,
-
-        [String] $TargetToLink
+        [String] $SourceFile,
+        [String] $TargetFile
     )
 
     try {
-        $HashOne = Get-FileHash -Path $SourceToLink -Algorithm SHA256
-        $HashTwo = Get-FileHash -Path $TargetToLink -Algorithm SHA256
+        $HashOne = Get-FileHash -Path $SourceFile -Algorithm SHA256
+        $HashTwo = Get-FileHash -Path $TargetFile -Algorithm SHA256
     } catch {
-        Write-Error "Error calculating file hashes: $_"
+        Write-Error "Error calculating hashes: $_"
         Write-Error "Line: $($_.ScriptStackTrace)"
     }
 
     try {
         if ($HashOne.Hash -ne $HashTwo.Hash) {
-            Remove-Item -Path $TargetToLink -Force
-            Write-Output "Removing $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
-            New-SymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
+            Remove-Item -Path $TargetFile -Force
+            Write-Output "Removing $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
+            New-CopyFile -SourceFile $SourceFile -TargetFile $TargetFile
         } else {
-            Write-Output "SymLink already set: $($(Split-Path -Path $SourceToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToLink).Name) -> $($(Split-Path -Path $TargetToLink) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToLink).Name)"
+            Write-Output "File already set: $($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
         }
     } catch {
-        Write-Error "Error creating new SymbolicLink: $_"
+        Write-Error "Error copying new file: $_"
         Write-Error "Line: $($_.ScriptStackTrace)"
     }
 }
 
-function Invoke-SetSymLinks {
+function Invoke-CopyFile {
     param(
-        [String] $SourceToLink,
-
-        [String] $TargetToLink
+        [String] $SourceFile,
+        [String] $TargetFile
     )
 
     try {
-        if ((Test-Path -Path $SourceToLink -PathType Leaf) -and (-not (Test-Path -Path $TargetToLink -PathType Leaf))) {
-            New-SymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
-        } elseif ((Test-Path -Path $SourceToLink -PathType Leaf) -and (Test-Path -Path $TargetToLink -PathType Leaf)) {
-            New-HashThenSymLink -SourceToLink $SourceToLink -TargetToLink $TargetToLink
-        } elseif ((-not (Test-Path -Path $SourceToLink -PathType Leaf)) -and (Test-Path -Path $TargetToLink -PathType Leaf)) {
-            Write-Error "Cannot create SymLink, SourceToLink doesn't exist in dotfiles"
+        if ((Test-Path -Path $SourceFile -PathType Leaf) -and (-not (Test-Path -Path $TargetFile -PathType Leaf))) {
+            New-CopyFile -SourceFile $SourceFile -TargetFile $TargetFile
+        } elseif ((Test-Path -Path $SourceFile -PathType Leaf) -and (Test-Path -Path $TargetFile -PathType Leaf)) {
+            New-HashThenCopyFile -SourceFile $SourceFile -TargetFile $TargetFile
+        } elseif ((-not (Test-Path -Path $SourceFile -PathType Leaf)) -and (Test-Path -Path $TargetFile -PathType Leaf)) {
+            Write-Error "Cannot copy file, SourceFile doesn't exist in dotfiles"
         }
     } catch {
-        Write-Error "Error creating new SymbolicLink: $_"
+        Write-Error "Error copying new file: $_"
         Write-Error "Line: $($_.ScriptStackTrace)"
     }
 }
@@ -142,11 +137,11 @@ if ($ConfigPowerShellProfileFiles = Get-ChildItem -Path $ConfigPowerShellProfile
         New-Item -Path $PowerShellProfilePath -ItemType Directory
 
         foreach ($File in $ConfigPowerShellProfileFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigPowerShellProfilePath\$($File.Name)" -TargetToLink "$PowerShellProfilePath\$($File.Name)"
+            Invoke-CopyFile -SourceFile "$ConfigPowerShellProfilePath\$($File.Name)" -TargetFile "$PowerShellProfilePath\$($File.Name)"
         }
     } else {
         foreach ($File in $ConfigPowerShellProfileFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigPowerShellProfilePath\$($File.Name)" -TargetToLink "$PowerShellProfilePath\$($File.Name)"
+            Invoke-CopyFile -SourceFile "$ConfigPowerShellProfilePath\$($File.Name)" -TargetFile "$PowerShellProfilePath\$($File.Name)"
         }
     }
 } else {
@@ -154,75 +149,41 @@ if ($ConfigPowerShellProfileFiles = Get-ChildItem -Path $ConfigPowerShellProfile
 }
 
 # Set PowerShell scripts
-# $PowerShellScriptsPath = "$env:USERPROFILE\Documents\PowerShell\Scripts"
-# if ($ConfigScriptFiles = Get-ChildItem -Path $ConfigScriptsPath -File -Recurse) {
-#     if (-not (Test-Path -Path $PowerShellScriptsPath -PathType Container)) {
-#         New-Item -Path $PowerShellScriptsPath -ItemType Directory
+$PowerShellScriptsPath = "$env:USERPROFILE\Documents\PowerShell\Scripts"
+if ($ConfigScriptFiles = Get-ChildItem -Path $ConfigScriptsPath -File -Recurse) {
+    if (-not (Test-Path -Path $PowerShellScriptsPath -PathType Container)) {
+        New-Item -Path $PowerShellScriptsPath -ItemType Directory
 
-#         foreach ($File in $ConfigScriptFiles) {
-#             Invoke-SetSymLinks -SourceToLink "$ConfigScriptsPath\$($File.Name)" -TargetToLink "$PowerShellScriptsPath\$($File.Name)"
-#         }
-#     } else {
-#         foreach ($File in $ConfigScriptFiles) {
-#             Invoke-SetSymLinks -SourceToLink "$ConfigScriptsPath\$($File.Name)" -TargetToLink "$PowerShellScriptsPath\$($File.Name)"
-#         }
-#     }
-# } else {
-#     Write-Output 'PowerShell scripts are missing from dotfiles'
-# }
+        foreach ($File in $ConfigScriptFiles) {
+            Invoke-CopyFile -SourceFile "$ConfigScriptsPath\$($File.Name)" -TargetFile "$PowerShellScriptsPath\$($File.Name)"
+        }
+    } else {
+        foreach ($File in $ConfigScriptFiles) {
+            Invoke-CopyFile -SourceFile "$ConfigScriptsPath\$($File.Name)" -TargetFile "$PowerShellScriptsPath\$($File.Name)"
+        }
+    }
+} else {
+    Write-Output 'PowerShell scripts are missing from dotfiles'
+}
 
 # Set Windows Terminal config
 $WindowsTerminalPath = "$env:LOCALAPPDATA\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState"
 if ($ConfigWindowsTerminalFiles = Get-ChildItem -Path $ConfigWindowsTerminalPath -File -Recurse) {
-    if (-not (Test-Path -Path $WindowsTerminalPath -PathType Container)) {
+    if ((Get-Command -Name wt.exe) -and (-not (Test-Path -Path $WindowsTerminalPath -PathType Container))) {
         New-Item -Path $WindowsTerminalPath -ItemType Directory
 
         foreach ($File in $ConfigWindowsTerminalFiles) {
             $SourceToCopy = "$ConfigWindowsTerminalPath\$($File.Name)"
             $TargetToCopy = "$WindowsTerminalPath\settings.json"
 
-            if ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (-not (Test-Path -Path $TargetToCopy -PathType Leaf))) {
-                Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
-                Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
-            } elseif ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (Test-Path -Path $TargetToCopy -PathType Leaf)) {
-                $HashOne = Get-FileHash -Path $SourceToCopy -Algorithm SHA256
-                $HashTwo = Get-FileHash -Path $TargetToCopy -Algorithm SHA256
-
-                if ($HashOne.Hash -ne $HashTwo.Hash) {
-                    Remove-Item -Path $TargetToCopy -Force
-                    Write-Output "Removing $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
-                    Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
-                    Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
-                } else {
-                    Write-Output "Config already set: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
-                }
-            } elseif (-not (Test-Path -Path $SourceToCopy -PathType Leaf)) {
-                Write-Error "SourceToCopy doesn't exist in dotfiles"
-            }
+            Invoke-CopyFile -SourceFile $SourceToCopy -TargetFile $TargetToCopy
         }
-    } else {
+    } elseif ((Get-Command -Name wt.exe) -and (Test-Path -Path $WindowsTerminalPath -PathType Container)) {
         foreach ($File in $ConfigWindowsTerminalFiles) {
             $SourceToCopy = "$ConfigWindowsTerminalPath\$($File.Name)"
             $TargetToCopy = "$WindowsTerminalPath\settings.json"
 
-            if ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (-not (Test-Path -Path $TargetToCopy -PathType Leaf))) {
-                Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
-                Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
-            } elseif ((Test-Path -Path $SourceToCopy -PathType Leaf) -and (Test-Path -Path $TargetToCopy -PathType Leaf)) {
-                $HashOne = Get-FileHash -Path $SourceToCopy -Algorithm SHA256
-                $HashTwo = Get-FileHash -Path $TargetToCopy -Algorithm SHA256
-
-                if ($HashOne.Hash -ne $HashTwo.Hash) {
-                    Remove-Item -Path $TargetToCopy -Force
-                    Write-Output "Removing $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
-                    Copy-Item -Path $SourceToCopy -Destination $TargetToCopy
-                    Write-Output "Copying: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
-                } else {
-                    Write-Output "Config already set: $($(Split-Path -Path $SourceToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceToCopy).Name) -> $($(Split-Path -Path $TargetToCopy) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetToCopy).Name)"
-                }
-            } elseif (-not (Test-Path -Path $SourceToCopy -PathType Leaf)) {
-                Write-Error "SourceToCopy doesn't exist in dotfiles"
-            }
+            Invoke-CopyFile -SourceFile $SourceToCopy -TargetFile $TargetToCopy
         }
     }
 } else {
@@ -236,13 +197,13 @@ if ($ConfigWingetFiles = Get-ChildItem -Path $ConfigWingetPath -File -Recurse) {
         New-Item -Path $WingetPath -ItemType Directory
 
         foreach ($File in $ConfigWingetFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigWingetPath\$($File.Name)" -TargetToLink "$WingetPath\settings.json"
-            Invoke-SetSymLinks -SourceToLink "$ConfigWingetPath\$($File.Name)" -TargetToLink "$WingetPath\settings.json.backup"
+            Invoke-CopyFile -SourceFile "$ConfigWingetPath\$($File.Name)" -TargetFile "$WingetPath\settings.json"
+            Invoke-CopyFile -SourceFile "$ConfigWingetPath\$($File.Name)" -TargetFile "$WingetPath\settings.json.backup"
         }
     } else {
         foreach ($File in $ConfigWingetFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigWingetPath\$($File.Name)" -TargetToLink "$WingetPath\settings.json"
-            Invoke-SetSymLinks -SourceToLink "$ConfigWingetPath\$($File.Name)" -TargetToLink "$WingetPath\settings.json.backup"
+            Invoke-CopyFile -SourceFile "$ConfigWingetPath\$($File.Name)" -TargetFile "$WingetPath\settings.json"
+            Invoke-CopyFile -SourceFile "$ConfigWingetPath\$($File.Name)" -TargetFile "$WingetPath\settings.json.backup"
         }
     }
 } else {
@@ -253,11 +214,11 @@ if ($ConfigWingetFiles = Get-ChildItem -Path $ConfigWingetPath -File -Recurse) {
 if ($ConfigWSLFiles = Get-ChildItem -Path $ConfigWSLPath -File -Recurse) {
     if (-not (Test-Path -Path "$env:USERPROFILE\.wslconfig" -PathType Leaf)) {
         foreach ($File in $ConfigWSLFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigWSLPath\$($File.Name)" -TargetToLink "$env:USERPROFILE\.wslconfig"
+            Invoke-CopyFile -SourceFile "$ConfigWSLPath\$($File.Name)" -TargetFile "$env:USERPROFILE\.wslconfig"
         }
     } else {
         foreach ($File in $ConfigWSLFiles) {
-            Invoke-SetSymLinks -SourceToLink "$ConfigWSLPath\$($File.Name)" -TargetToLink "$env:USERPROFILE\.wslconfig"
+            Invoke-CopyFile -SourceFile "$ConfigWSLPath\$($File.Name)" -TargetFile "$env:USERPROFILE\.wslconfig"
         }
     }
 } else {
