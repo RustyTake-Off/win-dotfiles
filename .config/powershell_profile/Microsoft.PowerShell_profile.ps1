@@ -29,7 +29,7 @@ function hpr { Set-Location "$env:USERPROFILE/pr" }
 function hwk { Set-Location "$env:USERPROFILE/wk" }
 function dl { Set-Location "$env:USERPROFILE/Downloads" }
 function doc { Set-Location "$env:USERPROFILE/Documents" }
-function desk { Set-Location "$env:USERPROFILE/Desktop" }
+function dtop { Set-Location "$env:USERPROFILE/Desktop" }
 
 # Function for opening windows explorer
 function open { explorer.exe $Args }
