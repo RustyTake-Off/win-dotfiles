@@ -6,8 +6,6 @@
 # └─╜ └──╜  └──╜  └───────╜
 # WinUp - script for setting up Windows.
 
-#Requires -RunAsAdministrator
-
 <#
 .SYNOPSIS
 Script for setting up Windows.
