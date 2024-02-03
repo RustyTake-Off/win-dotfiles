@@ -62,7 +62,7 @@
                 "name": "Windows PowerShell"
             },
             {
-                "backgroundImage": "%USERPROFILE%\\docs\\media\\msdos-120x128.png",
+                "backgroundImage": "%USERPROFILE%\\docs\\media\\msdos-128x128.png",
                 "backgroundImageAlignment": "bottomRight",
                 "backgroundImageOpacity": 0.2,
                 "backgroundImageStretchMode": "none",
