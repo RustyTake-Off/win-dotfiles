@@ -6,6 +6,8 @@
 # └─╜ └──╜  └──╜  └───────╜
 # Script for setting up Windows dotfiles.
 
+#Requires -RunAsAdministrator
+
 <#
 .SYNOPSIS
 Script for setting up Windows dotfiles.
@@ -40,6 +42,19 @@ $ConfigWingetPath = "$env:USERPROFILE\.config\winget"
 $ConfigWSLPath = "$env:USERPROFILE\.config\wsl"
 
 # ================================================================================
+# Miscellaneous code
+
+if (-not (Test-Path -Path "$env:USERPROFILE\pr" -PathType Container)) {
+    Write-Output "Creating 'personal' folder"
+    $null = New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
+}
+
+if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
+    Write-Output "Creating 'work' folder"
+    $null = New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
+}
+
+# ================================================================================
 # Helper functions
 
 function New-CopyFile {
@@ -49,8 +64,8 @@ function New-CopyFile {
     )
 
     try {
+        Write-Host 'Copying file: ' -ForegroundColor Blue -NoNewline; Write-Output "$($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
         Copy-Item -Path $SourceFile -Destination $TargetFile
-        Write-Output "Copying file: $($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
     } catch {
         Write-Error "Error copying new file: $_"
         Write-Error "Line: $($_.ScriptStackTrace)"
@@ -73,11 +88,11 @@ function New-HashThenCopyFile {
 
     try {
         if ($HashOne.Hash -ne $HashTwo.Hash) {
-            Write-Output "Removing $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
-            Remove-Item -Path $TargetFile -Force
+            # Write-Output "Removing $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
+            # Remove-Item -Path $TargetFile -Force
             New-CopyFile -SourceFile $SourceFile -TargetFile $TargetFile
         } else {
-            Write-Output "File already set: $($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
+            Write-Host 'File already set: ' -ForegroundColor Blue -NoNewline; Write-Output "$($(Split-Path -Path $SourceFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $SourceFile).Name) -> $($(Split-Path -Path $TargetFile) -replace [Regex]::Escape($env:USERPROFILE), '...')\$((Get-Item $TargetFile).Name)"
         }
     } catch {
         Write-Error "Error copying new file: $_"
@@ -223,17 +238,4 @@ if ($ConfigWSLFiles = Get-ChildItem -Path $ConfigWSLPath -File -Recurse) {
     }
 } else {
     Write-Output 'WSL config is missing from dotfiles'
-}
-
-# ================================================================================
-# Miscellaneous code
-
-if (-not (Test-Path -Path "$env:USERPROFILE\pr" -PathType Container)) {
-    $null = New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
-    Write-Output "Creating 'personal' folder"
-}
-
-if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
-    $null = New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
-    Write-Output "Creating 'work' folder"
 }

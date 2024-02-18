@@ -39,7 +39,7 @@ function dot {
     git --git-dir="$env:USERPROFILE\.dotfiles" --work-tree=$env:USERPROFILE $Args
 }
 function setdots {
-    Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath "\.config\scripts\Set-Dotfiles.ps1 $Args")
+    Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath '\.config\scripts\Set-Dotfiles.ps1')
 }
 function winup {
     Invoke-Expression (Join-Path -Path $env:USERPROFILE -ChildPath "\.config\scripts\Use-WinUp.ps1 $Args")
@@ -58,15 +58,14 @@ function sha1 { Get-FileHash -Algorithm SHA1 $Args }
 function sha256 { Get-FileHash -Algorithm SHA256 $Args }
 
 # Quick admin switch
-# For some reason passing arguments stopped working so now it only opens WT as admin
-# It also requires an additional profile in WT that always run as admin
 function admin {
-    wt --profile "PowerShell (Admin)" --suppressApplicationTitle --startingDirectory "$(Get-Location)"
-    # if (-not $Args) {
-        # Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -NoLogo -ExecutionPolicy Bypass -WorkingDirectory $(Get-Location)"
-    # } else {
-        # Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -NoLogo -ExecutionPolicy Bypass -WorkingDirectory $(Get-Location) -Command $Args"
-    # }
+    if (-not $Args) {
+        Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -NoLogo -ExecutionPolicy Bypass -WorkingDirectory $(Get-Location)"
+    } else {
+        Start-Process wt -Verb RunAs -ArgumentList "pwsh -NoExit -NoLogo -ExecutionPolicy Bypass -WorkingDirectory $(Get-Location) -Command $Args"
+    }
+    # This is a backup command if for some reason the whole thing brakes
+    # wt --profile "PowerShell (Admin)" --suppressApplicationTitle --startingDirectory "$(Get-Location)"
 }
 
 function touch ([String] $FileName) {
@@ -81,25 +80,24 @@ function pubip4 { (Invoke-WebRequest -Uri 'https://api.ipify.org/').Content }
 function pubip6 { (Invoke-WebRequest -Uri 'https://ifconfig.me/ip').Content }
 
 # Aliases
-Set-Alias -Name 'sudo' -Value 'admin'
-
 Set-Alias -Name 'g' -Value 'git'
 # Set-Alias -Name 'gi' -Value 'git init'
-Set-Alias -Name 'gcl' -Value 'git clone'
-Set-Alias -Name 'gs' -Value 'git status --short'
-Set-Alias -Name 'ga' -Value 'git add'
+# Set-Alias -Name 'gcl' -Value 'git clone'
+# Set-Alias -Name 'gs' -Value 'git status --short'
+# Set-Alias -Name 'ga' -Value 'git add'
 # Set-Alias -Name 'gc' -Value 'git commit'
 # Set-Alias -Name 'gcm' -Value 'git commit -m'
-Set-Alias -Name 'gpll' -Value 'git pull'
-Set-Alias -Name 'gpsh' -Value 'git push'
-Set-Alias -Name 'gchb' -Value 'git checkout -b'
+# Set-Alias -Name 'gcam' -Value 'git commit -m --amend'
+# Set-Alias -Name 'gpll' -Value 'git pull'
+# Set-Alias -Name 'gpsh' -Value 'git push'
+# Set-Alias -Name 'gchb' -Value 'git checkout -b'
 
 # Inits
 Invoke-Expression (&starship init powershell)
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
 
 # Setup posh-git for tab completion
-if (Get-Module -Name posh-git) {
+if (-not (Get-Module -Name posh-git)) {
     Import-Module -Name posh-git
     $GitPromptSettings.EnablePromptStatus = $false
     $GitPromptSettings.EnableFileStatus = $false

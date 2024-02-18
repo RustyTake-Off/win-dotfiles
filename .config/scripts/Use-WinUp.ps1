@@ -6,6 +6,8 @@
 # └─╜ └──╜  └──╜  └───────╜
 # WinUp - script for setting up Windows.
 
+#Requires -RunAsAdministrator
+
 <#
 .SYNOPSIS
 Script for setting up Windows.
@@ -29,8 +31,12 @@ Use-WinUp.ps1 -Command help
 Prints help message
 
 .EXAMPLE
-Use-WinUp.ps1 -Command drivers
-Downloads drivers
+Use-WinUp.ps1 -Command drivers -SubCommand min
+Downloads minimum needed drivers
+
+.EXAMPLE
+Use-WinUp.ps1 -Command drivers -SubCommand all
+Downloads all drivers
 
 .EXAMPLE
 Use-WinUp.ps1 -Command fonts
@@ -75,7 +81,7 @@ param (
     [String] $Command,
 
     [Parameter(Mandatory = $false, Position = 1)]
-    [ValidateSet('base', 'util', 'Debian', 'Ubuntu-22.04', 'Ubuntu-20.04', 'kali-linux', 'help')]
+    [ValidateSet('min', 'all', 'base', 'util', 'Debian', 'Ubuntu-22.04', 'Ubuntu-20.04', 'kali-linux', 'help')]
     [Alias('-s')]
     [String] $SubCommand
 )
@@ -105,7 +111,49 @@ if (Test-Path -Path "$ConfigPath\config.json") {
 $UserAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36'
 
 # ================================================================================
+# Miscellaneous code
+
+if (-not (Test-Path -Path "$env:USERPROFILE\pr" -PathType Container)) {
+    Write-Output "Creating 'personal' folder"
+    $null = New-Item -Path "$env:USERPROFILE\pr" -ItemType Directory
+}
+
+if (-not (Test-Path -Path "$env:USERPROFILE\wk" -PathType Container)) {
+    Write-Output "Creating 'work' folder"
+    $null = New-Item -Path "$env:USERPROFILE\wk" -ItemType Directory
+}
+
+# ================================================================================
 # Helper functions
+
+function Get-Help {
+    <#
+    .DESCRIPTION
+    Help message.
+    #>
+
+    process {
+        Write-Host 'Available commands:' -ForegroundColor Green
+        Write-Host @'
+    help        -   Prints help message
+    drivers
+    :   min     -   Downloads minimum needed drivers
+    :   all     -   Downloads all drivers
+    fonts       -   Downloads and installs fonts
+    ctt         -   Invokes the CTT - winutil script
+    apps
+    :   base    -   Installs base applications
+    :   util    -   Installs utility applications
+    psmods      -   Installs PowerShell modules
+    dots        -   Invokes Dotfiles setup script
+    wsl
+    :   Debian          -   Installs Debian on WSL
+    :   Ubuntu-22.04    -   Installs Ubuntu-22.04 on WSL
+    :   Ubuntu-20.04    -   Installs Ubuntu-20.04 on WSL
+    :   kali-linux      -   Installs kali-linux on WSL
+'@
+    }
+}
 
 function Set-Directory {
     <#
@@ -120,7 +168,7 @@ function Set-Directory {
 
     process {
         try {
-            Write-Host 'Creating ' -NoNewline; Write-Host "$DirectoryPath..." -ForegroundColor Blue
+            Write-Host 'Creating ' -NoNewline; Write-Host "$DirectoryPath ..." -ForegroundColor Blue
             New-Item -Path $DirectoryPath -ItemType Directory -ErrorAction SilentlyContinue > $null
         } catch {
             Write-Error "Failed to create $DirectoryPath"
@@ -148,7 +196,7 @@ function Invoke-Download {
         $DownloadPath = Join-Path -Path $DirectoryPath -ChildPath $FileName
 
         try {
-            Write-Host 'Downloading ' -NoNewline; Write-Host "$Url..." -ForegroundColor Blue
+            Write-Host 'Downloading ' -NoNewline; Write-Host "$Url ..." -ForegroundColor Blue
             Invoke-WebRequest -Uri $Url -UserAgent $UserAgent -OutFile $DownloadPath -ErrorAction SilentlyContinue
         } catch {
             Write-Error "Failed to download $FileName"
@@ -194,16 +242,16 @@ function Install-Fonts {
                 }
             }
 
-            Write-Host 'Installing ' -NoNewline; Write-Host "$FontName..." -ForegroundColor Blue
+            Write-Host 'Installing ' -NoNewline; Write-Host "$FontName ..." -ForegroundColor Blue
             if (-not (Test-Path (Join-Path -Path "$env:SystemRoot\fonts" -ChildPath $FontFile.Name))) {
-                Write-Host "Copying $FontName..."
+                Write-Host "Copying $FontName ..."
                 Copy-Item -Path $FontFile.FullName -Destination (Join-Path -Path "$env:SystemRoot\fonts" -ChildPath $FontFile.Name) -Force
             } else {
                 Write-Host "Font already exists: $FontName"
             }
 
             if (-not (Get-ItemProperty -Name $FontName -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Fonts' -ErrorAction SilentlyContinue)) {
-                Write-Host "Registering $FontName..."
+                Write-Host "Registering $FontName ..."
                 New-ItemProperty -Name $FontName -Path 'HKLM:\Software\Microsoft\Windows NT\CurrentVersion\Fonts' -PropertyType String -Value $FontFile.Name -Force -ErrorAction SilentlyContinue > $null
             } else {
                 Write-Host "Font already registered: $FontName"
@@ -216,7 +264,7 @@ function Install-Fonts {
 }
 
 # ================================================================================
-# Main functions
+# Main code
 
 function Invoke-GetDrivers {
     <#
@@ -224,13 +272,19 @@ function Invoke-GetDrivers {
     Downloads drivers.
     #>
 
+    param (
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('min', 'all')]
+        [String] $Type
+    )
+
     $DriversPath = Join-Path -Path $WinUpPath -ChildPath 'drivers'
     if (-not (Test-Path -Path $DriversPath)) {
         Set-Directory -DirectoryPath $DriversPath
     }
 
-    Write-Host 'Downloading drivers...' -ForegroundColor Green
-    foreach ($DriverUrl in $WinUpConfig.drivers) {
+    Write-Host 'Downloading drivers ...' -ForegroundColor Green
+    foreach ($DriverUrl in $WinUpConfig.drivers.$Type) {
         Invoke-Download -DirectoryPath $DriversPath -Url $DriverUrl
     }
     Write-Host 'Download complete!' -ForegroundColor Green
@@ -247,7 +301,7 @@ function Invoke-InstallFonts {
         Set-Directory -DirectoryPath $FontsPath
     }
 
-    Write-Host 'Downloading fonts...' -ForegroundColor Green
+    Write-Host 'Downloading fonts ...' -ForegroundColor Green
     foreach ($FontUrl in $WinUpConfig.fonts) {
         Invoke-Download -DirectoryPath $FontsPath -Url $FontUrl
     }
@@ -255,7 +309,7 @@ function Invoke-InstallFonts {
 
     $FontsZipFiles = Get-ChildItem -Path $FontsPath -Filter '*.zip'
 
-    Write-Host 'Extracting fonts...' -ForegroundColor Green
+    Write-Host 'Extracting fonts ...' -ForegroundColor Green
     foreach ($ZipFile in $FontsZipFiles) {
         $ExtractionDirectoryPath = Join-Path -Path $FontsPath -ChildPath $($ZipFile.BaseName)
         Set-Directory -DirectoryPath $ExtractionDirectoryPath
@@ -265,7 +319,7 @@ function Invoke-InstallFonts {
         Remove-Item -Path $ZipFile.FullName -Force
         Write-Host 'Extraction complete!' -ForegroundColor Green
 
-        Write-Host "Installing fonts $($ZipFile.BaseName)..." -ForegroundColor Green
+        Write-Host "Installing fonts $($ZipFile.BaseName) ..." -ForegroundColor Green
         $Fonts = Get-ChildItem -Path $ExtractionDirectoryPath | Where-Object { ($_.Name -like '*.ttf') -or ($_.Name -like '*.otf') }
         Add-Type -AssemblyName PresentationCore
         foreach ($FontItem in $Fonts) {
@@ -281,7 +335,7 @@ function Invoke-CTT {
     Invokes the "CTT - winutil" utility by https://github.com/ChrisTitusTech.
     #>
 
-    Write-Host 'Invoking CTT - winutil...' -ForegroundColor Green
+    Write-Host 'Invoking CTT - winutil ...' -ForegroundColor Green
     try {
         Invoke-WebRequest 'https://christitus.com/win' -UseBasicParsing | Invoke-Expression
     } catch {
@@ -309,21 +363,21 @@ function Get-Apps {
         Write-Error -Message 'Winget is not installed'
         Exit
     }
-    Write-Host 'Installing applications...' -ForegroundColor Green
+    Write-Host 'Installing applications ...' -ForegroundColor Green
     foreach ($App in $WinUpConfig.apps.$Type) {
-        if ($App.source -eq "winget") {
+        if ($App.source -eq 'winget') {
             if (-not (winget list --exact --id $App.name | Select-String -SimpleMatch $App.name)) {
-                Write-Host 'Installing ' -NoNewline; Write-Host "$($App.name) ($($App.source))..." -ForegroundColor Blue
+                Write-Host 'Installing ' -NoNewline; Write-Host "$($App.name) ($($App.source)) ..." -ForegroundColor Blue
                 Start-Process winget -ArgumentList "install --exact --id $($App.name) --source $($App.source) $($App.args) --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
             } else {
                 Write-Host 'App is already installed: ' -NoNewline; Write-Host "$($App.name) ($($App.source))" -ForegroundColor Blue
             }
-        } elseif  ($App.source -eq "msstore")  {
+        } elseif ($App.source -eq 'msstore') {
             if (-not (winget list --exact --id $App.id | Select-String -SimpleMatch $App.id)) {
-                Write-Host 'Installing ' -NoNewline; Write-Host "$($App.id) ($($App.name))($($App.source))..." -ForegroundColor Blue
+                Write-Host 'Installing ' -NoNewline; Write-Host "$($App.id) ($($App.name))($($App.source)) ..." -ForegroundColor Blue
                 Start-Process winget -ArgumentList "install --exact --id $($App.id) --source $($App.source) $($App.args) --accept-package-agreements --accept-source-agreements" -NoNewWindow -Wait
             } else {
-                Write-Host 'App is already installed: ' -NoNewline; Write-Host "$($App.id) ($($App.name))($($App.source))" -ForegroundColor Blue
+                Write-Host 'App is already installed: ' -NoNewline; Write-Host "$($App.name) ($($App.id))($($App.source))" -ForegroundColor Blue
             }
         }
     }
@@ -336,13 +390,13 @@ function Get-PSModules {
     Installs or updates PowerShell modules.
     #>
 
-    Write-Host 'Installing Powershell modules...' -ForegroundColor Green
+    Write-Host 'Installing Powershell modules ...' -ForegroundColor Green
     if (-not (Get-PackageProvider | Select-String -SimpleMatch NuGet)) {
         Install-PackageProvider -Name NuGet
     }
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
     foreach ($Module in $WinUpConfig.psmodules) {
-        Write-Host 'Installing ' -NoNewline; Write-Host "$Module..." -ForegroundColor Blue
+        Write-Host 'Installing ' -NoNewline; Write-Host "$Module ..." -ForegroundColor Blue
         Install-Module -Name $Module -Repository PSGallery -Force
     }
     Set-PSRepository -Name PSGallery -InstallationPolicy Untrusted
@@ -355,7 +409,7 @@ function Invoke-DotfilesScript {
     Invokes the Dotfiles setup script.
     #>
 
-    Write-Host 'Invoking Dotfiles setup script...' -ForegroundColor Green
+    Write-Host 'Invoking Dotfiles setup script ...' -ForegroundColor Green
     try {
         if (Test-Path -Path "$ConfigPath\scripts\Set-Dotfiles.ps1") {
             Invoke-Expression "$ConfigPath\scripts\Set-Dotfiles.ps1"
@@ -381,7 +435,7 @@ function Install-WSL {
         [String] $Distribution
     )
 
-    Write-Host 'Invoking Dotfiles setup script...' -ForegroundColor Green
+    Write-Host 'Invoking Dotfiles setup script ...' -ForegroundColor Green
     try {
         wsl --install --distribution $Distribution
     } catch {
@@ -394,7 +448,20 @@ function Install-WSL {
 # Switch with possible commands
 switch ($Command) {
     'drivers' {
-        Invoke-GetDrivers
+        switch ($SubCommand) {
+            'min' {
+                Invoke-GetDrivers -Type $SubCommand
+            }
+            'all' {
+                Invoke-GetDrivers -Type $SubCommand
+            }
+            'help' {
+                Get-Help
+            }
+            default {
+                Get-Help
+            }
+        }
     }
     'fonts' {
         Invoke-InstallFonts
@@ -411,15 +478,10 @@ switch ($Command) {
                 Get-Apps -Type $SubCommand
             }
             'help' {
-                . $PSCommandPath -Command apps
+                Get-Help
             }
             default {
-                Write-Host 'Available commands:'`n -ForegroundColor Green
-                Write-Host @'
-        help    -   Prints help message
-        base    -   Installs base applications
-        util    -   Installs utility applications
-'@`n
+                Get-Help
             }
         }
     }
@@ -444,40 +506,17 @@ switch ($Command) {
                 Install-WSL -Distribution $SubCommand
             }
             'help' {
-                . $PSCommandPath -Command wsl
+                Get-Help
             }
             default {
-                Write-Host 'Available commands:'`n -ForegroundColor Green
-                Write-Host @'
-        help            -   Prints help message
-        Debian          -   Installs Debian on WSL
-        Ubuntu-22.04    -   Installs Ubuntu-22.04 on WSL
-        Ubuntu-20.04    -   Installs Ubuntu-22.04 on WSL
-        kali-linux      -   Installs kali-linux on WSL
-'@`n
+                Get-Help
             }
         }
     }
     'help' {
-        . $PSCommandPath
+        Get-Help
     }
     default {
-        Write-Host 'Available commands:'`n -ForegroundColor Green
-        Write-Host @'
-        help        -   Prints help message
-        drivers     -   Downloads drivers
-        fonts       -   Downloads and installs fonts
-        ctt         -   Invokes the CTT - winutil script
-        apps
-        :   base    -   Installs base applications
-        :   util    -   Installs utility applications
-        psmods      -   Installs PowerShell modules
-        dots        -   Invokes Dotfiles setup script
-        wsl
-        :   Debian          -   Installs Debian on WSL
-        :   Ubuntu-22.04    -   Installs Ubuntu-22.04 on WSL
-        :   Ubuntu-20.04    -   Installs Ubuntu-22.04 on WSL
-        :   kali-linux      -   Installs kali-linux on WSL
-'@`n
+        Get-Help
     }
 }
