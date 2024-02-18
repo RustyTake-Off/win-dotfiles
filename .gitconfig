@@ -1,5 +1,5 @@
 [core]
-    # eol = lf
+    eol = crlf
     untrackedCache = true
 
 [includeIf "gitdir:~/pr/"]
@@ -29,5 +29,13 @@
     log = true
 
 [alias]
+    i = init
+    cl = clone
     s = status --short
-    st = status --short
+    a = add
+    c = commit
+    cm = commit -m
+    cam = commit -m --amend
+    pl = pull
+    pu = push
+    chb = checkout -b
