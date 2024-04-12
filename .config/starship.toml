@@ -1,7 +1,7 @@
 # ╒══════╗        ╒═══════╗
 # │ ╓──┐ ║════════╗  ╓─┐  ║
 # │ ╚══╛ ║──┐  ╓──╜  ║ │  ║  RustyTake-Off
-# │ ╓─┐ ╔╝  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
+# │ ╓─┐ ╓╜  │  ║  │  ║ │  ║  https://github.com/RustyTake-Off
 # │ ║ │ ╚╗  │  ║  │  ╚═╛  ║
 # └─╜ └──╜  └──╜  └───────╜
 # Starship config
@@ -11,7 +11,7 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 # Set prompt format
-format = '$os$username@$hostname$directory$python$nodejs$golang$rust$kubernetes$terraform$azure$aws$gcloud$git_branch$git_status'
+format = '$os$username@$hostname$directory$python$git_branch$git_status'
 add_newline = false
 
 # Change some of the colors
@@ -94,31 +94,31 @@ disabled = false
 format = '\[[$symbol]($style)\] '
 symbol = '𝑁𝑂'
 style = 'orange bold'
-disabled = false
+disabled = true
 
 [golang]
 format = '\[[($symbol)]($style)\] '
 symbol = '𝐺𝑂'
 style = 'cyan bold'
-disabled = false
+disabled = true
 
 [rust]
 format = '\[[$symbol]($style)\] '
 symbol = '🦀'
 style = 'red bold'
-disabled = false
+disabled = true
 
 [kubernetes]
 format = '\[[$symbol $context]($style)\] '
 symbol = '☸'
 style = 'purple bold'
-disabled = false
+disabled = true
 
 [terraform]
 format = '\[[$symbol]($style)\] '
 symbol = '𝑇𝐹'
 style = 'purple bold'
-disabled = false
+disabled = true
 
 [azure]
 format = '\[[$symbol]($style)\] '

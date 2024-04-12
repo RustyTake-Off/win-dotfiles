@@ -3,8 +3,8 @@
 
 # Except
 !.config/
-!docs/
 !.gitconfig
 !.gitignore
+!docs/
 !LICENSE
 !README.md
